@@ -1,23 +1,41 @@
 package com.cosmos.videochat.controller;
 
+import com.cosmos.user.entity.User;
+import com.cosmos.videochat.dto.AppUserDto;
 import com.cosmos.videochat.dto.Greeting;
 import com.cosmos.videochat.dto.HelloMessage;
 import com.cosmos.videochat.dto.OfferDto;
+import com.cosmos.videochat.service.VideoChatService;
+import com.cosmos.videochat.util.WebSocketUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.util.HtmlUtils;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Controller
-@RequiredArgsConstructor
 public class MessageController {
 
+
     private  final SimpMessagingTemplate messagingTemplate;
+
+    private  final VideoChatService videoChatService;
+
+
+
+
+    public MessageController(SimpMessagingTemplate messagingTemplate, VideoChatService videoChatService) {
+        this.messagingTemplate = messagingTemplate;
+        this.videoChatService = videoChatService;
+    }
 
     @PostMapping("/app/videochat")
     public ResponseEntity<?> sendTospecificeUser(@RequestBody OfferDto dto){
@@ -32,6 +50,18 @@ public class MessageController {
         Thread.sleep(1000); // simulated delay
         return new Greeting("Hello, " + HtmlUtils.htmlEscape(message.getName()) + "!");
     }
+
+    @GetMapping("/app/getactiveusers")
+    public ResponseEntity<?> getActiveUsers(){
+        List<String> usernames = WebSocketUtil.getAllActiveUsers();
+        List<Long> userIds = usernames.stream().map(s -> Long.parseLong(s)).collect(Collectors.toList());
+        List<AppUserDto> appUserDtos = videoChatService.getActiveWebUsers(userIds);
+
+        return ResponseEntity.ok(appUserDtos);
+
+    }
+
+
 
 
 

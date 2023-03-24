@@ -7,11 +7,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class WebSocketUtil {
+    private static SimpUserRegistry simpUserRegistry;
 
 
-    public static   List<String> getAllActiveUsers(SimpUserRegistry userRegistry){
+    public static   List<String> getAllActiveUsers(){
 
-        return userRegistry.getUsers().stream().map(SimpUser::getName).collect(Collectors.toList());
+        return simpUserRegistry.getUsers().stream().map(SimpUser::getName).collect(Collectors.toList());
 
     }
 

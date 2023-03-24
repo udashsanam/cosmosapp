@@ -1,11 +1,10 @@
 package com.cosmos.login.repo;
 
 import com.cosmos.login.entity.AppUser;
+import com.cosmos.videochat.dto.AppUserDto;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface AppUserRepo extends JpaRepository<AppUser, Long> {
@@ -15,4 +14,11 @@ public interface AppUserRepo extends JpaRepository<AppUser, Long> {
 //    @Modifying
 //    @Transactional
 //	void delete(Long id);
+
+    @Query(value = "select tb.user_type from tbl_users tb where tb.user_id = ?1;", nativeQuery = true)
+    String findUserType(Long id);
+
+
+    @Query("select new com.cosmos.videochat.dto.AppUserDto(a.userId, concat(a.firstName, a.lastName) ) from AppUser a where a.userId = ?1")
+    AppUserDto findAppUserDtoById(Long userId);
 }
