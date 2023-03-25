@@ -45,7 +45,7 @@ public class MessageController {
         this.userRegistry = simpUserRegistry;
     }
 
-    @PostMapping("/app/videochat")
+    @PostMapping("/api/videochat")
     public ResponseEntity<?> sendTospecificeUser(@RequestBody OfferDto dto){
         messagingTemplate.convertAndSendToUser(dto.getUsername(),"/topic/video/chat", dto);
         System.out.println(dto.getUsername());
@@ -59,7 +59,7 @@ public class MessageController {
         return new Greeting("Hello, " + HtmlUtils.htmlEscape(message.getName()) + "!");
     }
 
-    @GetMapping("/app/getactiveusers")
+    @GetMapping("/api/getactiveusers")
     public ResponseEntity<?> getActiveUsers(){
         List<String> usernames = WebSocketUtil.getConnectedUsers(userRegistry);
         List<Long> userIds = usernames.stream().map(s -> Long.parseLong(s)).collect(Collectors.toList());
@@ -69,7 +69,7 @@ public class MessageController {
 
     }
 
-    @GetMapping("/app/test")
+    @GetMapping("/api/test")
     public ResponseEntity<?> test(){
 
         return ResponseEntity.ok("test successful");

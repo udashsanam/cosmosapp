@@ -36,7 +36,7 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
     public void registerStompEndpoints(StompEndpointRegistry registry) {
 
         // Registers the endpoint where the handshake will take place
-        registry.addEndpoint("/stomp")
+        registry.addEndpoint("/api/stomp")
                 // Allow the origin http://localhost:63343 to send messages to us. (Base url of the client)
                 .setAllowedOriginPatterns(VideoChatUtil.ALLOWED_ORIGINS)
                 // Enable SockJS fallback options
