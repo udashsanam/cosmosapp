@@ -69,6 +69,12 @@ public class MessageController {
 
     }
 
+    @GetMapping("/app/test")
+    public ResponseEntity<?> test(){
+
+        return ResponseEntity.ok("test successful");
+    }
+
 
 
 

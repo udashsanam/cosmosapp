@@ -1,4 +1,5 @@
 package com.cosmos.common.security.config;
+import com.cosmos.common.security.util.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -48,7 +49,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		*/
 		
 		http.authorizeRequests()
-			.antMatchers("/api").permitAll();
+			.antMatchers(SecurityUtils.AUTH_WHITELIST).permitAll();
 		// If a user try to access a resource without having enough permissions
 		http.exceptionHandling().accessDeniedPage("/accessdenied");
 
