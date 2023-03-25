@@ -65,10 +65,10 @@ public class AuthenticationHandler implements ChannelInterceptor {
 
 //        Boolean isAuthenticted  = jwtTokenProvider.validateToken(token);
 
-        AppUser appUser = appUser= userRepository.findByDeviceId(token);
+        AppUser appUser = userRepository.findByDeviceId(token);
 
         if(appUser == null || appUser.getUserId() == null){
-            appUserRepo.findByEmail(jwtTokenProvider.getUsername(token));
+            appUser = appUserRepo.findByEmail(jwtTokenProvider.getUsername(token));
         }
         if(appUser == null){
             throw new RuntimeException("authentication fail ");
