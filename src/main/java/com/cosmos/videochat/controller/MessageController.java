@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.user.SimpUser;
+import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,15 +31,21 @@ public class MessageController {
 
     private  final VideoChatService videoChatService;
 
+    private final SimpUserRegistry userRegistry;
 
 
 
-    public MessageController(SimpMessagingTemplate messagingTemplate, VideoChatService videoChatService) {
+
+
+    public MessageController(SimpMessagingTemplate messagingTemplate,
+                             VideoChatService videoChatService,
+                             SimpUserRegistry simpUserRegistry) {
         this.messagingTemplate = messagingTemplate;
         this.videoChatService = videoChatService;
+        this.userRegistry = simpUserRegistry;
     }
 
-    @PostMapping("/app/videochat")
+    @PostMapping("/api/videochat")
     public ResponseEntity<?> sendTospecificeUser(@RequestBody OfferDto dto){
         messagingTemplate.convertAndSendToUser(dto.getUsername(),"/topic/video/chat", dto);
         System.out.println(dto.getUsername());
@@ -51,14 +59,20 @@ public class MessageController {
         return new Greeting("Hello, " + HtmlUtils.htmlEscape(message.getName()) + "!");
     }
 
-    @GetMapping("/app/getactiveusers")
+    @GetMapping("/api/getactiveusers")
     public ResponseEntity<?> getActiveUsers(){
-        List<String> usernames = WebSocketUtil.getAllActiveUsers();
+        List<String> usernames = WebSocketUtil.getConnectedUsers(userRegistry);
         List<Long> userIds = usernames.stream().map(s -> Long.parseLong(s)).collect(Collectors.toList());
         List<AppUserDto> appUserDtos = videoChatService.getActiveWebUsers(userIds);
 
         return ResponseEntity.ok(appUserDtos);
 
+    }
+
+    @GetMapping("/api/test")
+    public ResponseEntity<?> test(){
+
+        return ResponseEntity.ok("test successful");
     }
 
 

@@ -10,9 +10,11 @@ public class WebSocketUtil {
     private static SimpUserRegistry simpUserRegistry;
 
 
-    public static   List<String> getAllActiveUsers(){
-
-        return simpUserRegistry.getUsers().stream().map(SimpUser::getName).collect(Collectors.toList());
+    public static List<String> getConnectedUsers(SimpUserRegistry userRegistry) {
+        return userRegistry
+                .getUsers().stream()
+                .map(SimpUser::getName)
+                .collect(Collectors.toList());
 
     }
 

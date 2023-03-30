@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AppUserRepo extends JpaRepository<AppUser, Long> {
+    @Query("select a from AppUser a where a.email = ?1")
     AppUser findByEmail(String email);
     AppUser findByUserId(Long id);
 //    @Query(value = "DELETE FROM tbl_users WHERE user_id = ?1", nativeQuery = true)
@@ -15,7 +16,7 @@ public interface AppUserRepo extends JpaRepository<AppUser, Long> {
 //    @Transactional
 //	void delete(Long id);
 
-    @Query(value = "select tb.user_type from tbl_users tb where tb.user_id = ?1;", nativeQuery = true)
+    @Query(value = "select tb.user_type from tbl_users tb where tb.user_id = ?1", nativeQuery = true)
     String findUserType(Long id);
 
 

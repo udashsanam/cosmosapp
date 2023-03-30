@@ -1,5 +1,6 @@
 package com.cosmos.videochat.config;
 
+import com.cosmos.videochat.util.VideoChatUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
@@ -35,9 +36,9 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
     public void registerStompEndpoints(StompEndpointRegistry registry) {
 
         // Registers the endpoint where the handshake will take place
-        registry.addEndpoint("/stomp")
+        registry.addEndpoint("/api/stomp")
                 // Allow the origin http://localhost:63343 to send messages to us. (Base url of the client)
-                .setAllowedOriginPatterns("*")
+                .setAllowedOriginPatterns(VideoChatUtil.ALLOWED_ORIGINS)
                 // Enable SockJS fallback options
                 .withSockJS();
 
