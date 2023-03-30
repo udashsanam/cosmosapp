@@ -42,7 +42,13 @@ public interface EnglishAnswerPoolRepo extends JpaRepository<EnglishAnswerPool, 
             "left join tbl_users u \n" +
             "on u.user_id = fn.fk_astro_id\n" +
             "where engQues.fk_user_id=?1"
-            , nativeQuery = true)
+            , nativeQuery = true,
+    countQuery = "select count(*) FROM tbl_eng_ques_pool engQues\n" +
+            "left JOIN tbl_final_question_answer fn\n" +
+            "ON engQues.eng_ques_id = fn.fk_eng_qsn_id\n" +
+            "left join tbl_users u \n" +
+            "on u.user_id = fn.fk_astro_id\n" +
+            "where engQues.fk_user_id=?1 ")
     Page<QuestionAnswerHistory> findQuestionAnswerHistoryOfUser(Long userId, Pageable pageable);
     
     /*
