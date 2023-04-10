@@ -83,4 +83,17 @@ public interface EnglishAnswerPoolRepo extends JpaRepository<EnglishAnswerPool, 
             "group by fk_mod_nep_eng_rep",
             nativeQuery = true)
     List<ModeratorWorkReport> selectModeratorWorkReport(String fromDate, String toDate);
+
+
+    @Query(value = "SELECT engQues.eng_question as engQuestion, answer, concat(u.first_name, u.last_name) as repliedBy, u.img_url as profileImgUrl, engQues.ques_sts as status,\n" +
+            "engQues.created_at as createdAt\n" +
+            "FROM tbl_eng_ques_pool engQues\n" +
+            "left JOIN tbl_final_question_answer fn\n" +
+            "ON engQues.eng_ques_id = fn.fk_eng_qsn_id\n" +
+            "left join tbl_users u \n" +
+            "on u.user_id = fn.fk_astro_id\n" +
+            "where engQues.fk_user_id=?1"
+            , nativeQuery = true)
+    List<QuestionAnswerHistory> findQuestionAnswerHistory(Long userId);
+
 }

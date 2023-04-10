@@ -239,4 +239,25 @@ public class UserController {
         CurrentlyLoggedInUser currentlyLoggedInUser = (CurrentlyLoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return currentlyLoggedInUser.getCurrentlyLoggedInUserId();
     }
+
+    @GetMapping(value = "/previous-history/{device_id}", produces = "application/json")
+    public UserHistoryDto getUserPreviousHistory(@PathVariable("device_id") String device_id) {
+
+        if (device_id == null || device_id.isEmpty())
+            throw new CustomException("Please provide valid device id to query.", HttpStatus.NOT_ACCEPTABLE);
+        UserHistoryDto userHistory = new UserHistoryDto();
+        User user = userRepository.getUserbyDeviceId(device_id);
+
+        if (user != null) {
+            UserDetailsWithQA details = mapper.map(user, UserDetailsWithQA.class);
+            details.setQuestionAnswerHistoryList(englishAnswerPoolRepo.findQuestionAnswerHistory(user.getUserId()));
+            userHistory.setUserDetailsWithQA(details);
+        }
+
+        userHistory.setWelcomeMessages(userService.getWelcomeMessages("welcome"));
+
+        userHistory.setMessages(userService.getInitialMessages("welcome"));
+
+        return userHistory;
+    }
 }
