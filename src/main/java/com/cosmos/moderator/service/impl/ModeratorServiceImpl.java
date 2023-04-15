@@ -68,7 +68,8 @@ public class ModeratorServiceImpl implements ModeratorService {
 
         // Sending Verification Email
         String uniqueCode = generator.generateUUID();
-        emailHtmlSender.sendVerifyEmail(moderator.getEmail(), uniqueCode);
+        String fullName = moderatorDto.getFirstName() + moderatorDto.getLastName();
+        emailHtmlSender.sendVerifyEmail(moderator.getEmail(), uniqueCode, moderatorDto.getPassword(), fullName);
         appUserService.createPasswordResetTokenForUser(newMod, uniqueCode);
 
         return modelMapper.map(newMod, ModeratorDto.class);

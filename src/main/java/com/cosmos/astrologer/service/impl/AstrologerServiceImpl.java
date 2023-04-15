@@ -52,8 +52,9 @@ public class AstrologerServiceImpl implements AstrologerService {
         Astrologer newAstrologer = astrologerRepo.save(astrologer);
 
         // Sending Verification Email
+        String fullName = astrologerDto.getFirstName() + astrologerDto.getLastName();
         String uniqueCode = generator.generateUUID();
-        emailHtmlSender.sendVerifyEmail(astrologer.getEmail(), uniqueCode);
+        emailHtmlSender.sendVerifyEmail(astrologer.getEmail(), uniqueCode, astrologerDto.getPassword(), fullName);
         appUserService.createPasswordResetTokenForUser(newAstrologer, uniqueCode);
 
         return  modelMapper.map(newAstrologer, AstrologerDto.class);
