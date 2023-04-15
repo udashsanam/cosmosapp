@@ -31,9 +31,12 @@ public class EmailServiceImpl implements EmailService{
         if(user == null) throw new RuntimeException(" user not found");
         PasswordResetToken passwordResetToken = passwordResetTokenRepo.findByToken(emailVerifiyDto.getToken());
         if(passwordResetToken == null) throw new RuntimeException("Token not match ");
+        if(!emailVerifiyDto.getPassword().equals(emailVerifiyDto.getConfirmPassword())) throw new RuntimeException("passsword dinot match ");
+        user.setEnabled(true);
+        user.setAccountNonLocked(true);
+        userRepository.save(user);
 
 
-
-        return false;
+        return true;
     }
 }

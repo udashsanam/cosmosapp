@@ -27,7 +27,6 @@ public class EmailController {
     @PostMapping("/verify-email")
     public ResponseEntity<?> verifyEmail(@RequestBody EmailVerifiyDto emailVerifiyDto){
         boolean isverified = emailService.veirifyEmail(emailVerifiyDto);
-
         return ResponseEntity.ok(isverified);
     }
 }
