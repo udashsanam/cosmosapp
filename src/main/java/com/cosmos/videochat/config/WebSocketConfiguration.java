@@ -11,6 +11,7 @@ import org.springframework.web.socket.config.annotation.*;
 @Configuration
 @EnableWebSocketMessageBroker
 @RequiredArgsConstructor
+@EnableWebSocket
 public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer {
 
     private final AuthenticationHandler authenticationHandler;
@@ -43,12 +44,12 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
                 .withSockJS();
 
     }
-
-    @Override
-    public void configureClientInboundChannel(ChannelRegistration registration) {
-
-        // Add our interceptor for authentication/authorization
-        registration.interceptors(authenticationHandler);
-
-    }
+//
+//    @Override
+//    public void configureClientInboundChannel(ChannelRegistration registration) {
+//
+//        // Add our interceptor for authentication/authorization
+//        registration.interceptors(authenticationHandler);
+//
+//    }
 }
