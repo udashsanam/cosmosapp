@@ -38,7 +38,7 @@ public class EmailHtmlSender {
     @Async
     public void sendVerifyEmail(String email, String code, String password, String name) {
         LOGGER.info("Sending Email.....");
-        String url = "http://www.system.cosmosastrology.com/#/api/verify-email?token=" + code + "&email=" + email;
+        String url = "http://localhost:4200/#/api/verify-email?token=" + code + "&email=" + email;
 
 
         Context context = new Context();
