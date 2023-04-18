@@ -46,14 +46,14 @@ public class EmailHtmlSender {
         context.setVariable("password", password);
         context.setVariable("name", name);
 
-        sendEmail(email, "email/verify-email","Cosmos Astrology - Verify Email", context);
+        sendEmail(email, "verify-email","Cosmos Astrology - Verify Email", context);
     }
 
     private void sendEmail(String email, String template, String subject, Context context) {
         String body = templateEngine.process(template, context);
         EmailStatus emailStatus = null;
 
-        emailStatus = emailSender.sendHtml(email, subject, body, "cosmosastrology.112@gmail.com", null);
+        emailStatus = emailSender.sendHtml(email, subject, body, "noreply.cosmosastrology@gmail.com", null);
 
 
         if (emailStatus.isError()) {
