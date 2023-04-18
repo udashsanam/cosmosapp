@@ -53,7 +53,7 @@ public class EmailHtmlSender {
         String body = templateEngine.process(template, context);
         EmailStatus emailStatus = null;
 
-        emailStatus = emailSender.sendHtml(email, subject, body, "cosmosastrology.112@gmail.com", null);
+        emailStatus = emailSender.sendHtml(email, subject, body, "noreply.cosmosastrology@gmail.com", null);
 
 
         if (emailStatus.isError()) {

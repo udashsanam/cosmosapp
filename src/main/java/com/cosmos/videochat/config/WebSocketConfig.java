@@ -2,6 +2,8 @@ package com.cosmos.videochat.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
@@ -18,4 +20,9 @@ public class WebSocketConfig implements WebSocketConfigurer {
                 .addInterceptors(webSocketHeaderInterceptor)
                 .setAllowedOrigins("*");
     }
+
+
+
+
+
 }
