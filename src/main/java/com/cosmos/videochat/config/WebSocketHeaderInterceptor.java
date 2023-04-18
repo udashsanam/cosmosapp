@@ -48,10 +48,9 @@ public class WebSocketHeaderInterceptor implements HandshakeInterceptor {
             appUser = appUserRepo.findByEmail(jwt);
         }
         if(appUser == null){
-            throw new RuntimeException("authentication fail ");
+            throw new CustomException("authentication fail ", HttpStatus.UNAUTHORIZED);
         }
-        headers.add("userid", "header-value");
-
+        headers.add("userid", appUser.getUserId().toString());
 
 
         return true;
