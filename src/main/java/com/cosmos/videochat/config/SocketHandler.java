@@ -20,9 +20,10 @@ public class SocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        sessions.put(session, session.getHandshakeHeaders().get("userid").get(0));
+//        sessions.put(session, session.getHandshakeHeaders().get("userid").get(0));
             System.out.println("hello");
-            session.sendMessage(new TextMessage("Websocket connected " + session.getHandshakeHeaders().get("userid").get(0)));
+            session.sendMessage(new TextMessage("Welcome cosmos"));
+//            session.sendMessage(new TextMessage("Websocket connected " + session.getHandshakeHeaders().get("userid").get(0)));
     }
 
     @Override
