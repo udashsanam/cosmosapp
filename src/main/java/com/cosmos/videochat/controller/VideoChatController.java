@@ -13,11 +13,11 @@ import org.springframework.web.socket.WebSocketSession;
 import java.util.*;
 
 @RestController("/api/video-chat")
-public class MyController {
+public class VideoChatController {
 
     private final AppUserRepo appUserRepo;
 
-    public MyController(AppUserRepo appUserRepo) {
+    public VideoChatController(AppUserRepo appUserRepo) {
         this.appUserRepo = appUserRepo;
     }
 

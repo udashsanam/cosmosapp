@@ -92,7 +92,7 @@ public interface EnglishAnswerPoolRepo extends JpaRepository<EnglishAnswerPool, 
             "ON engQues.eng_ques_id = fn.fk_eng_qsn_id\n" +
             "left join tbl_users u \n" +
             "on u.user_id = fn.fk_astro_id\n" +
-            "where engQues.fk_user_id=?1"
+            "where engQues.fk_user_id=?1 order by engQues.created_at desc "
             , nativeQuery = true)
     List<QuestionAnswerHistory> findQuestionAnswerHistory(Long userId);
 
