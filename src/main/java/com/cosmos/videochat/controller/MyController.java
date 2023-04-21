@@ -1,37 +1,46 @@
 package com.cosmos.videochat.controller;
 
+import com.cosmos.login.entity.AppUser;
+import com.cosmos.login.repo.AppUserRepo;
 import com.cosmos.videochat.config.SocketHandler;
-import org.springframework.context.event.EventListener;
+import com.cosmos.videochat.dto.AppUserDto;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.Header;
-import org.springframework.messaging.handler.annotation.Headers;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
-import org.springframework.web.socket.messaging.SessionConnectedEvent;
-import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
-@RestController()
+@RestController("/api/video-chat")
 public class MyController {
 
+    private final AppUserRepo appUserRepo;
 
-//        @GetMapping("/api/getactiveusers")
-//    public ResponseEntity<?> getActiveUsers(){
-//            Map<String, WebSocketSession> sessions = SocketHandler.sessions;
-//
-//
-//
-//        return ResponseEntity.ok(appUserDtos);
-//
-//    }
+    public MyController(AppUserRepo appUserRepo) {
+        this.appUserRepo = appUserRepo;
+    }
+
+
+    @GetMapping("/getactiveusers")
+    public ResponseEntity<?> getActiveUsers(){
+        Map<WebSocketSession, String> sessions = SocketHandler.sessions;
+        Set<WebSocketSession> onlineUser = sessions.keySet();
+        List<AppUserDto> appUserDtos = new ArrayList<>();
+
+        for (WebSocketSession webSocketSession :
+                onlineUser) {
+            Long userid = Long.parseLong(sessions.get(onlineUser));
+            String userType = appUserRepo.findUserType(userid);
+                if(userType.equals("moderator") || userType.equals("astrologer")){
+                    AppUser appUser = appUserRepo.getById(userid);
+                    appUserDtos.add(new AppUserDto(appUser.getUserId(), appUser.getFirstName() + appUser.getLastName()));
+                }
+        }
+
+        return new ResponseEntity<>(appUserDtos, HttpStatus.OK);
+
+    }
 
 
 
