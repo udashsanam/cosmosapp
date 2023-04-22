@@ -33,24 +33,24 @@ public class WebSocketHeaderInterceptor implements HandshakeInterceptor {
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler,
                                    Map<String, Object> attributes) throws Exception {
 
-//        HttpHeaders headers = request.getHeaders();
-//        List<String> token =  headers.get("token");
-//
-//        AppUser appUser = userRepository.findByDeviceId(token.get(0));
-//
-//        if(appUser == null || appUser.getUserId() == null){
-//            String jwt = "";
-//            try {
-//                 jwt = jwtTokenProvider.getUsername(token.get(0));
-//            }catch (Exception ex){
-//                throw new CustomException("jwt mal formed", HttpStatus.UNAUTHORIZED);
-//            }
-//            appUser = appUserRepo.findByEmail(jwt);
-//        }
-//        if(appUser == null){
-//            throw new CustomException("authentication fail ", HttpStatus.UNAUTHORIZED);
-//        }
-//        headers.add("userid", appUser.getUserId().toString());
+        HttpHeaders headers = request.getHeaders();
+        List<String> token =  headers.get("token");
+
+        AppUser appUser = userRepository.findByDeviceId(token.get(0));
+
+        if(appUser == null || appUser.getUserId() == null){
+            String jwt = "";
+            try {
+                 jwt = jwtTokenProvider.getUsername(token.get(0));
+            }catch (Exception ex){
+                throw new CustomException("jwt mal formed", HttpStatus.UNAUTHORIZED);
+            }
+            appUser = appUserRepo.findByEmail(jwt);
+        }
+        if(appUser == null){
+            throw new CustomException("authentication fail ", HttpStatus.UNAUTHORIZED);
+        }
+        headers.add("userid", appUser.getUserId().toString());
 
 
         return true;

@@ -7,12 +7,14 @@ import com.cosmos.videochat.dto.AppUserDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.util.*;
 
-@RestController("/api/video-chat")
+@RestController
+@RequestMapping("/api/video-chat")
 public class VideoChatController {
 
     private final AppUserRepo appUserRepo;
@@ -30,7 +32,7 @@ public class VideoChatController {
 
         for (WebSocketSession webSocketSession :
                 onlineUser) {
-            Long userid = Long.parseLong(sessions.get(onlineUser));
+            Long userid = Long.parseLong(sessions.get(webSocketSession));
             String userType = appUserRepo.findUserType(userid);
                 if(userType.equals("moderator") || userType.equals("astrologer")){
                     AppUser appUser = appUserRepo.getById(userid);
