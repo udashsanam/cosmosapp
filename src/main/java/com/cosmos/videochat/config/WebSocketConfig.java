@@ -18,7 +18,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(new SocketHandler(), "/socket")
                 .addInterceptors(webSocketHeaderInterceptor)
-                .setAllowedOrigins("*");
+                .setAllowedOrigins("*", "http://localhost:4000", "https://system.cosmosastrology.com");
     }
 
 

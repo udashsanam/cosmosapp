@@ -34,25 +34,31 @@ public class WebSocketHeaderInterceptor implements HandshakeInterceptor {
                                    Map<String, Object> attributes) throws Exception {
 
         HttpHeaders headers = request.getHeaders();
-        List<String> token =  headers.get("token");
+        List<String> webToken = headers.get("sec-websocket-version");
+        List<String> deviceId =  headers.get("token");
 
-        AppUser appUser = userRepository.findByDeviceId(token.get(0));
 
-        if(appUser == null || appUser.getUserId() == null){
-            String jwt = "";
-            try {
-                 jwt = jwtTokenProvider.getUsername(token.get(0));
-            }catch (Exception ex){
-                throw new CustomException("jwt mal formed", HttpStatus.UNAUTHORIZED);
+            if(deviceId!=null && deviceId.size() !=0){
+                try {
+                AppUser mobileUser = userRepository.findByDeviceId(deviceId.get(0));
+                headers.add("userid", mobileUser.getUserId().toString());
+                 } catch (Exception ex){
+                throw new CustomException("Failed to connect to websocket", HttpStatus.BAD_REQUEST);
+                    }
+            } else if(webToken !=null && webToken.size() != 0){
+                String jwt;
+                try {
+                     jwt = jwtTokenProvider.getUsername(webToken.get(0));
+                }catch (Exception ex){
+                    throw new CustomException("jwt mal formed", HttpStatus.UNAUTHORIZED);
+                }
+                AppUser webUser = appUserRepo.findByEmail(jwt);
+                headers.add("userid", webUser.getUserId().toString());
+            } else {
+                throw new CustomException("Unauthorized", HttpStatus.UNAUTHORIZED);
             }
-            appUser = appUserRepo.findByEmail(jwt);
-        }
-        if(appUser == null){
-            throw new CustomException("authentication fail ", HttpStatus.UNAUTHORIZED);
-        }
-        headers.add("userid", appUser.getUserId().toString());
 
-
+//        Sec-WebSocket-Protocol: deviceId, eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjb3Ntb3Nhc3Ryb2xvZ3kuMTEyQGdtYWlsLmNvbSIsImRpc3BsYXlOYW1lIjoiQ29zbW9zIEFzdHJvbG9neSIsImFwcFVzZXJJZCI6MSwiYXV0aCI6IlJPTEVfQURNSU4iLCJpYXQiOjE2ODIzOTk0MjV9.uxVHWLUC-rmSfk3rMAKAJnMEjMBu59JGygh4ZtC_xKg
         return true;
     }
 

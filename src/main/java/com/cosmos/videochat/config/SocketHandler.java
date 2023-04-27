@@ -2,6 +2,7 @@ package com.cosmos.videochat.config;
 
 import com.cosmos.videochat.dto.TextMessageDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import org.modelmapper.internal.util.CopyOnWriteLinkedHashMap;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
@@ -29,18 +30,36 @@ public class SocketHandler extends TextWebSocketHandler {
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        TextMessageDto textMessageDto = objectMapper.readValue(message.getPayload(), TextMessageDto.class);
-        System.out.println("hello");
-        for (Map.Entry<WebSocketSession, String> entry:
-        sessions.entrySet()) {
-            if(entry.getValue().equals(textMessageDto.getUserid()))
-                entry.getKey().sendMessage(new TextMessage(textMessageDto.getData()));
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            TextMessageDto textMessageDto = objectMapper.readValue(message.getPayload(), TextMessageDto.class);
+            System.out.println("hello");
+            for (Map.Entry<WebSocketSession, String> entry:
+                    sessions.entrySet()) {
+                if(entry.getValue().equals(textMessageDto.getReceiver())){
+                    String sender = session.getHandshakeHeaders().get("userid").get(0);
+                    TextMessageDto textMessageDto1 = new TextMessageDto();
+
+                    textMessageDto1.setSender(sender);
+                    textMessageDto1.setData(textMessageDto.getData());
+
+                    ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+                    String json = ow.writeValueAsString(textMessageDto1);
+
+                    entry.getKey().sendMessage(new TextMessage(json));
+
+                }
+            }
+        } catch (Exception ex){
+            session.sendMessage(new TextMessage("Error sending message to receiver"));
         }
+
+
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+        System.out.println("disconnected");
         sessions.remove(session);
     }
 
