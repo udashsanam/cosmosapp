@@ -1,9 +1,12 @@
 package com.cosmos.videochat.config;
 
+import com.cosmos.login.repo.AppUserRepo;
 import com.cosmos.videochat.dto.TextMessageDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import org.modelmapper.internal.util.CopyOnWriteLinkedHashMap;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -19,12 +22,20 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class SocketHandler extends TextWebSocketHandler {
     public static final Map<WebSocketSession, String> sessions = new CopyOnWriteLinkedHashMap<>();
 
+    private final SimpMessagingTemplate simpMessagingTemplate;
+
+
+    public SocketHandler(SimpMessagingTemplate simpMessagingTemplate) {
+        this.simpMessagingTemplate = simpMessagingTemplate;
+    }
+
+
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        sessions.put(session, session.getHandshakeHeaders().get("userid").get(0));
+            sessions.put(session, session.getHandshakeHeaders().get("userid").get(0));
             System.out.println("hello");
-//            session.sendMessage(new TextMessage("Welcome cosmos"));
-            session.sendMessage(new TextMessage("Websocket connected " + session.getHandshakeHeaders().get("userid").get(0)));
+            session.sendMessage(new TextMessage("Welcome cosmos"));
+             session.sendMessage(new TextMessage("Websocket connected " + session.getHandshakeHeaders().get("userid").get(0)));
     }
 
     @Override
@@ -34,25 +45,35 @@ public class SocketHandler extends TextWebSocketHandler {
             ObjectMapper objectMapper = new ObjectMapper();
             TextMessageDto textMessageDto = objectMapper.readValue(message.getPayload(), TextMessageDto.class);
             System.out.println("hello");
-            for (Map.Entry<WebSocketSession, String> entry:
-                    sessions.entrySet()) {
-                if(entry.getValue().equals(textMessageDto.getReceiver())){
-                    String sender = session.getHandshakeHeaders().get("userid").get(0);
-                    TextMessageDto textMessageDto1 = new TextMessageDto();
+//            for (Map.Entry<WebSocketSession, String> entry:
+//                    sessions.entrySet()) {
+//                if(entry.getValue().equals(textMessageDto.getReceiver())){
+//                    String sender = session.getHandshakeHeaders().get("userid").get(0);
+//                    TextMessageDto textMessageDto1 = new TextMessageDto();
+//
+//                    textMessageDto1.setSender(sender);
+//                    textMessageDto1.setData(textMessageDto.getData());
+//
+//                    ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+//                    String json = ow.writeValueAsString(textMessageDto1);
+//
+//                    entry.getKey().sendMessage(new TextMessage(json));
+//
+//                }
+//            }
+            String sender = session.getHandshakeHeaders().get("userid").get(0);
+            TextMessageDto textMessageDto1 = new TextMessageDto();
 
-                    textMessageDto1.setSender(sender);
-                    textMessageDto1.setData(textMessageDto.getData());
+            textMessageDto1.setSender(sender);
+            textMessageDto1.setData(textMessageDto.getData());
 
-                    ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-                    String json = ow.writeValueAsString(textMessageDto1);
+            simpMessagingTemplate.convertAndSendToUser("165", "/topic/video/chat", textMessageDto1);
 
-                    entry.getKey().sendMessage(new TextMessage(json));
-
-                }
-            }
         } catch (Exception ex){
             session.sendMessage(new TextMessage("Error sending message to receiver"));
         }
+
+
 
 
     }

@@ -13,6 +13,7 @@ public interface VideoChatUtil {
             "http://localhost:5000",
             "http://localhost:3001",
             "http://localhost:8081",
+            "http://localhost:4200",
             "amtrixtech.com.np",
             "http://192.168.1.21:3001",
             "http://192.168.1.21:3000",

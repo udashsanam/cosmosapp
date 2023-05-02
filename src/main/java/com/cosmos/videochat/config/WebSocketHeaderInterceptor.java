@@ -34,7 +34,7 @@ public class WebSocketHeaderInterceptor implements HandshakeInterceptor {
                                    Map<String, Object> attributes) throws Exception {
 
         HttpHeaders headers = request.getHeaders();
-        List<String> webToken = headers.get("sec-websocket-version");
+        List<String> webToken = headers.get("sec-websocket-protocol");
         List<String> deviceId =  headers.get("token");
 
 
