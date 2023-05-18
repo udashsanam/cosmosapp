@@ -34,8 +34,14 @@ public class SocketHandler extends TextWebSocketHandler {
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
             sessions.put(session, session.getHandshakeHeaders().get("userid").get(0));
             System.out.println("hello");
-            session.sendMessage(new TextMessage("Welcome cosmos"));
-             session.sendMessage(new TextMessage("Websocket connected " + session.getHandshakeHeaders().get("userid").get(0)));
+//            session.sendMessage(new TextMessage("Welcome cosmos"));
+            TextMessageDto textMessageDto = new TextMessageDto();
+            textMessageDto.setData("Websocket connected welcome to cosmos " + session.getHandshakeHeaders().get("userid").get(0));
+            textMessageDto.setSender(session.getHandshakeHeaders().get(0).toString());
+            ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+            String json = ow.writeValueAsString(textMessageDto);
+            session.sendMessage(new TextMessage(json));
+//             session.sendMessage(new TextMessage("Websocket connected " + session.getHandshakeHeaders().get("userid").get(0)));
     }
 
     @Override
@@ -67,7 +73,7 @@ public class SocketHandler extends TextWebSocketHandler {
             textMessageDto1.setSender(sender);
             textMessageDto1.setData(textMessageDto.getData());
 
-            simpMessagingTemplate.convertAndSendToUser("165", "/topic/video/chat", textMessageDto1);
+            simpMessagingTemplate.convertAndSendToUser(textMessageDto.getReceiver(), "/topic/video/chat", textMessageDto1);
 
         } catch (Exception ex){
             session.sendMessage(new TextMessage("Error sending message to receiver"));

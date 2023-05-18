@@ -5,11 +5,14 @@ import com.cosmos.login.repo.AppUserRepo;
 import com.cosmos.videochat.config.SocketHandler;
 import com.cosmos.videochat.dto.AppUserDto;
 import com.cosmos.videochat.dto.TextMessageDto;
+import com.cosmos.videochat.util.WebSocketUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import org.modelmapper.internal.util.CopyOnWriteLinkedHashMap;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -28,9 +31,14 @@ public class VideoChatController {
 
     private final SimpMessagingTemplate simpMessagingTemplate;
 
-    public VideoChatController(AppUserRepo appUserRepo, SimpMessagingTemplate simpMessagingTemplate) {
+    private SimpUserRegistry simpUserRegistry;
+
+
+    public VideoChatController(AppUserRepo appUserRepo, SimpMessagingTemplate simpMessagingTemplate,
+                               SimpUserRegistry userRegistry) {
         this.appUserRepo = appUserRepo;
         this.simpMessagingTemplate = simpMessagingTemplate;
+        this.simpUserRegistry = userRegistry;
     }
 
 
@@ -87,6 +95,30 @@ public class VideoChatController {
         return ResponseEntity.ok("successfully send");
 
 
+    }
+    @PostMapping("/send-to-web")
+    public ResponseEntity<?> sendToWeb(@RequestBody TextMessageDto textMessageDto, Authentication authentication) {
+
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String sender = appUserRepo.findByEmail(userDetails.getUsername()).getUserId().toString();
+        textMessageDto.setSender(sender);
+        List<String> connectedUser = WebSocketUtil.getConnectedUsers(simpUserRegistry);
+        int count = 0;
+        for (String user :
+                connectedUser) {
+
+            if(user.equals(textMessageDto.getReceiver())){
+                count++;
+                simpMessagingTemplate.convertAndSendToUser(textMessageDto.getReceiver(), "/topic/video/chat", textMessageDto);
+            }
+        }
+        if(count ==0){
+            return ResponseEntity.ok("user offline");
+        }
+
+
+
+        return ResponseEntity.ok("Sucessfully send");
     }
 
 
