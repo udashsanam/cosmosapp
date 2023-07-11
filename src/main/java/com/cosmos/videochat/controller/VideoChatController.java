@@ -99,9 +99,9 @@ public class VideoChatController {
     @PostMapping("/send-to-web")
     public ResponseEntity<?> sendToWeb(@RequestBody TextMessageDto textMessageDto, Authentication authentication) {
 
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String sender = appUserRepo.findByEmail(userDetails.getUsername()).getUserId().toString();
-        textMessageDto.setSender(sender);
+//        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+//        String sender = appUserRepo.findByEmail(userDetails.getUsername()).getUserId().toString();
+        textMessageDto.setSender(textMessageDto.getSender());
         List<String> connectedUser = WebSocketUtil.getConnectedUsers(simpUserRegistry);
         int count = 0;
         for (String user :
