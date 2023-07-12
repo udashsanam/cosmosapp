@@ -18,4 +18,6 @@ public class PaymentUserDto {
     private String transactionUUID;
 
     private Long userId;
+
+    private String deviceId;
 }

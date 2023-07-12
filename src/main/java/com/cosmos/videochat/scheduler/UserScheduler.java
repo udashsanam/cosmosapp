@@ -23,13 +23,13 @@ public class UserScheduler {
         this.appUserRepo = appUserRepo;
     }
 
-    @Scheduled(cron = "* */5 * * * *")
-    private void connectedUser(){
-        List<String> stringList = WebSocketUtil.getConnectedUsers(userRegistry);
-        log.info("connected users ");
-        stringList.stream().forEach( x-> {
-        log.info(appUserRepo.findByUserId(Long.parseLong(x)).getUserId().toString());
-        });
-
-    }
+//    @Scheduled(cron = "* */5 * * * *")
+//    private void connectedUser(){
+//        List<String> stringList = WebSocketUtil.getConnectedUsers(userRegistry);
+//        log.info("connected users ");
+//        stringList.stream().forEach( x-> {
+//        log.info(appUserRepo.findByUserId(Long.parseLong(x)).getUserId().toString());
+//        });
+//
+//    }
 }

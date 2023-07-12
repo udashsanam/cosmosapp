@@ -7,4 +7,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @Repository
 public interface PaymentUserRepo extends JpaRepository<PaymentUserEntity, Long> {
+
+    PaymentUserEntity findByAuthTransRefNoAndTransactionUUID(Long authId, String transactionUUID);
 }

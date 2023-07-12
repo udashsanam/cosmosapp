@@ -33,20 +33,23 @@ public class PaymentUserServiceImpl implements PaymentUserService{
 
     @Override
     public PaymentUserDto save(PaymentUserDto paymentUserDto, HttpServletRequest  request) {
-        String email = jwtTokenProvider.getUsername(jwtTokenProvider.resolveToken(request));
-        User appUser = appUserRepo.findByEmail(email);
+//        String email = jwtTokenProvider.getUsername(jwtTokenProvider.resolveToken(request));
+//        User appUser = appUserRepo.findByEmail(email);
+        AppUser auser = appUserRepo.findByDeviceId(paymentUserDto.getDeviceId());
+        if(paymentUserDto.getUserId() !=null && auser ==null) auser = appUserRepo.findByUserId(paymentUserDto.getUserId());
+        if(auser == null) throw new RuntimeException("user not found");
         PaymentUserEntity user = PaymentUserEntity.builder()
                 .authTransRefNo(paymentUserDto.getAuthTransRefNo())
                 .transactionUUID(paymentUserDto.getTransactionUUID())
-                .user(appUser)
+                .user(auser)
                 .build();
 
         try {
             paymentUserRepo.save(user);
         }catch (Exception ex){
             ex.printStackTrace();
-            throw new RuntimeException("eroor saing");
+            throw new RuntimeException("error saing");
         }
-        return PaymentUserDto.builder().userId(appUser.getUserId()).build();
+        return PaymentUserDto.builder().userId(auser.getUserId()).build();
     }
 }

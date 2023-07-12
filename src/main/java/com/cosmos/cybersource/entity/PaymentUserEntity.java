@@ -1,5 +1,6 @@
 package com.cosmos.cybersource.entity;
 
+import com.cosmos.login.entity.AppUser;
 import com.cosmos.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,7 +23,7 @@ public class PaymentUserEntity {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "app_user_id")
-    private User user;
+    private AppUser user;
 
     @Column(name = "auth_trans_ref_no")
     private Long authTransRefNo;
