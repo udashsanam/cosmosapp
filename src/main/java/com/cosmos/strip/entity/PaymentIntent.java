@@ -34,5 +34,10 @@ public class PaymentIntent {
     @Column(name = "client_secret")
     private String clientSecret;
 
+    @Column(name = "device_id")
+    private String deviceId;
+
+    @Column(name = "response")
+    private String response;
 
 }
