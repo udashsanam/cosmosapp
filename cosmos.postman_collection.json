@@ -1,0 +1,127 @@
+{
+	"info": {
+		"_postman_id": "c2ab2383-b9b9-4a61-be97-a7247ea53681",
+		"name": "cosmos",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "17798333"
+	},
+	"item": [
+		{
+			"name": "create payment intent",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"amount\": 10.00,\n  \"deviceId\": \"05f22fd30883f5e5\",\n  \"currency\": \"usd\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/api/payment/create-payment-intent",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"payment",
+						"create-payment-intent"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/api/payment/verify-payment",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"clientSecret\": \"pi_3NWAzHSCeBYlkmBn00cK53Y7_secret_ky5enDuh7MYPxzMf8tHwQUMh6\",\n  \"response\": \"succeeded\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/api/payment/verify-payment",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"payment",
+						"verify-payment"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "card details save",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\n  \"deviceId\": \"1c65d2ceb4992e40\", \n  \"cardNumber\": \"test_50bb4a0244ec\",\n  \"exiryDate\": \"test_50e571f4e833\",\n  \"firstName\": \"test_7bff4740fe67\",\n  \"lastName\": \"test_065b937fea47\",\n  \"middleName\": \"test_afb5294be757\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://system.cosmosastrology.com/api/card-detail/save",
+					"protocol": "https",
+					"host": [
+						"system",
+						"cosmosastrology",
+						"com"
+					],
+					"path": [
+						"api",
+						"card-detail",
+						"save"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get all card detail",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://system.cosmosastrology.com/api/card-detail/get-all-card-detail?deviceId=1c65d2ceb4992e40",
+					"protocol": "https",
+					"host": [
+						"system",
+						"cosmosastrology",
+						"com"
+					],
+					"path": [
+						"api",
+						"card-detail",
+						"get-all-card-detail"
+					],
+					"query": [
+						{
+							"key": "deviceId",
+							"value": "1c65d2ceb4992e40"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
