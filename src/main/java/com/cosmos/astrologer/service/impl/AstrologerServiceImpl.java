@@ -44,7 +44,7 @@ public class AstrologerServiceImpl implements AstrologerService {
         Astrologer astrologer = modelMapper.map(astrologerDto, Astrologer.class);
         astrologer.setHashPassword(passwordEncoder.encode(astrologerDto.getPassword()));
         //TODO: Need to change to false when mail activated.
-        astrologer.setEnabled(false);
+        astrologer.setEnabled(true);
         astrologer.setAccountNonLocked(true);
         astrologer.setInitialPasswordChanged(true);
         astrologer.setRole(Role.ROLE_ASTROLOGER);
