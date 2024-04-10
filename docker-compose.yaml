@@ -1,0 +1,9 @@
+version: '3.7'
+services:
+  cosmos:
+    build: .
+    image: cosmos-app
+    container_name: cosmos-app
+    restart: always
+    ports:
+      - "8181:8080"
