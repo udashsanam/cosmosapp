@@ -11,8 +11,12 @@ import com.cosmos.user.dto.JwtRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.Calendar;
 import java.util.Optional;
 
@@ -47,8 +51,15 @@ public class AppUserServiceImpl {
     }
     
     public void deleteAppUser(Long id) {
-        passwordTokenRepository.deletePasswordResetTokensByUser_UserId(id);
-//    	appUserRepo.delete(id);
+//        passwordTokenRepository.deletePasswordResetTokensByUser_UserId(id);
+            Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
+        Object principal = authentication.getPrincipal();
+        UserDetails userDetails = (UserDetails) principal;
+
+            if(!userDetails.getUsername().equals("cosmosastrology.112@gmail.com")) {
+             throw new CustomException("NOt authorize ", HttpStatus.UNAUTHORIZED);
+            }
+    	appUserRepo.delete(appUserRepo.findByUserId(id));
     }
     
     public AppUserToken processWebLogin(JwtRequest jwtRequest) {
