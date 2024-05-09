@@ -10,7 +10,6 @@ import com.cosmos.common.exception.CustomException;
 import com.cosmos.common.security.JwtTokenProvider;
 import com.cosmos.credit.entity.Credit;
 import com.cosmos.credit.service.CreditServiceImpl;
-import com.cosmos.login.entity.AppUser;
 import com.cosmos.login.entity.Role;
 import com.cosmos.login.service.impl.AppUserServiceImpl;
 import com.cosmos.notification.model.Notification;
@@ -23,9 +22,12 @@ import com.cosmos.questionPool.projection.NepaliQuestionProjection;
 import com.cosmos.questionPool.repo.EnglishAnswerPoolRepo;
 import com.cosmos.questionPool.repo.EnglishQuestionPoolRepo;
 import com.cosmos.questionPool.repo.NepaliQuestionPoolRepo;
+import com.cosmos.user.dto.UserChangeLogDto;
 import com.cosmos.user.dto.UserDto;
 import com.cosmos.user.dto.UserQuestionAnswerHistory;
 import com.cosmos.user.entity.User;
+import com.cosmos.user.entity.UserChangeLog;
+import com.cosmos.user.repo.UserChangeLogRepo;
 import com.cosmos.user.repo.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -69,6 +71,9 @@ public class UserServiceImpl {
 
     @Autowired
     private CreditServiceImpl creditService;
+
+    @Autowired
+    private UserChangeLogRepo userChangeLogRepo;
 
     private static Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
@@ -116,6 +121,10 @@ public class UserServiceImpl {
             user.setProfileImageUrl(userDto.getProfileImageUrl());
             user.setDeviceToken(userDto.getDeviceToken());
             user.setFirstLogin(false);
+            UserChangeLog userChangeLog = new UserChangeLog();
+            copyUserChangeLog(userChangeLog, userDto);
+            userChangeLog.setUser(user);
+            userChangeLogRepo.save(userChangeLog);
         }
 
         User newUser = userRepository.save(user);
@@ -134,6 +143,21 @@ public class UserServiceImpl {
             throw new CustomException("User not found under this id: " + id, HttpStatus.NOT_FOUND);
         }
         return modelMapper.map(user, UserDto.class);
+    }
+
+    private void copyUserChangeLog(UserChangeLog user, UserDto userDto){
+        user.setFirstName(userDto.getFirstName());
+        user.setLastName(userDto.getLastName());
+        user.setGender(userDto.getGender());
+        user.setPhoneNumber(userDto.getPhoneNumber());
+        user.setDateOfBirth(userDto.getDateOfBirth());
+        user.setBirthTime(userDto.getBirthTime());
+        user.setAccurateTime(userDto.isAccurateTime());
+        user.setCountry(userDto.getCountry());
+        user.setCountryIso(userDto.getCountryIso());
+        user.setState(userDto.getState());
+        user.setCity(userDto.getCity());
+        user.setDeviceToken(userDto.getDeviceToken());
     }
 
     public UserDto findUserDetailsByDeviceId(String deviceId) {
@@ -221,5 +245,29 @@ public class UserServiceImpl {
 
 
         return notificationService.sendPushNotification(user.getDeviceToken(), notification, answerDataPayLoad);
+    }
+
+    public List<UserChangeLogDto> getAllChangeHistory(Long userId) {
+        List<UserChangeLog> list = userChangeLogRepo.findAllByUserUserIdOrderByIdDesc(userId);
+            return list.stream().map(userChangeLog -> {
+                UserChangeLogDto userChangeLogDto = new UserChangeLogDto();
+                copyChangeLog(userChangeLog, userChangeLogDto);
+                return userChangeLogDto;
+            }).collect(Collectors.toList());
+    }
+
+    private void copyChangeLog(UserChangeLog userDto, UserChangeLogDto user){
+        user.setFirstName(userDto.getFirstName());
+        user.setLastName(userDto.getLastName());
+        user.setGender(userDto.getGender());
+        user.setPhoneNumber(userDto.getPhoneNumber());
+        user.setDateOfBirth(userDto.getDateOfBirth());
+        user.setBirthTime(userDto.getBirthTime());
+        user.setAccurateTime(userDto.getAccurateTime());
+        user.setCountry(userDto.getCountry());
+        user.setCountryIso(userDto.getCountryIso());
+        user.setState(userDto.getState());
+        user.setCity(userDto.getCity());
+        user.setDeviceToken(userDto.getDeviceToken());
     }
 }

@@ -10,7 +10,6 @@ import com.cosmos.common.exception.CustomException;
 import com.cosmos.common.storage.model.UploadFileResponse;
 import com.cosmos.common.storage.service.FileStorageService;
 import com.cosmos.compatibility.dto.CompatibilityDto;
-import com.cosmos.compatibility.entity.Compatibility;
 import com.cosmos.compatibility.service.CompatibilityServiceImpl;
 import com.cosmos.credit.entity.Credit;
 import com.cosmos.credit.service.CreditServiceImpl;
@@ -24,7 +23,6 @@ import com.cosmos.quickSupport.service.ReportedIssueServiceImpl;
 import com.cosmos.ritual.entity.RitualEnquiry;
 import com.cosmos.ritual.service.RitualEnquiryServiceImpl;
 import com.cosmos.user.dto.*;
-import com.cosmos.user.entity.PackageSubscription;
 import com.cosmos.user.entity.User;
 import com.cosmos.user.repo.UserRepository;
 import com.cosmos.user.service.PackageSubscriptionServiceImpl;
@@ -259,5 +257,10 @@ public class UserController {
         userHistory.setMessages(userService.getInitialMessages("welcome"));
 
         return userHistory;
+    }
+
+    @GetMapping(value = "/get-detail-change-history")
+    public List<UserChangeLogDto> getChangeHistory(@RequestParam("userId") Long userId){
+        return  userService.getAllChangeHistory(userId);
     }
 }
