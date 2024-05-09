@@ -13,7 +13,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>CosmosBackendApplication</name>
 	<description>CosmosBackendApplication</description>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 	<properties>
 		<java.version>11</java.version>
 	</properties>
@@ -107,12 +107,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-		    <groupId>org.springdoc</groupId>
-		    <artifactId>springdoc-openapi-ui</artifactId>
-		    <version>1.6.4</version>
-		</dependency>
-		
-		<dependency>
 		    <groupId>org.springdoc</groupId>
 		    <artifactId>springdoc-openapi-ui</artifactId>
 		    <version>1.6.4</version>

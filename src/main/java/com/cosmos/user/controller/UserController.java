@@ -2,6 +2,7 @@ package com.cosmos.user.controller;
 
 import com.cosmos.admin.entity.QuestionPackage;
 import com.cosmos.admin.entity.QuestionPrice;
+import com.cosmos.admin.repo.QuestionPackageRepo;
 import com.cosmos.admin.service.QuestionPackageService;
 import com.cosmos.admin.service.QuestionPriceService;
 import com.cosmos.astrologer.dto.AstrologerDto;
@@ -76,6 +77,9 @@ public class UserController {
 
     @Autowired
     private CompatibilityServiceImpl compatibilityService;
+
+    @Autowired
+    private QuestionPackageRepo questionPackageRepo;
 
     @GetMapping(value = "/welcome-messages", produces = "application/json")
     public Map<String, List<String>> processWelcomeMessages() {
@@ -160,10 +164,18 @@ public class UserController {
 
     @GetMapping(value = "/fetch-package/{country}", produces = "application/json")
     public List<QuestionPackage> fetchPackageByCountry(@PathVariable String country) {
-        if (!country.equalsIgnoreCase("Nepal")) {
-            country = "International";
-        }
+//        if (!country.equalsIgnoreCase("Nepal")) {
+//            country = "International";
+//        }
         return questionPackageService.getQuestionPackageByCountry(country);
+    }
+
+    @PostMapping(value = "/fetch-package", produces = "application/json")
+    public QuestionPackage savePackage(@RequestBody QuestionPackage  country) {
+//        if (!country.equalsIgnoreCase("Nepal")) {
+//            country = "International";
+//        }
+        return questionPackageRepo.save(country);
     }
 
     @PostMapping(value = "/compatibility/add", consumes = "application/json")

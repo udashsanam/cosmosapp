@@ -59,7 +59,7 @@ public class ModeratorServiceImpl implements ModeratorService {
 
         Moderator moderator = modelMapper.map(moderatorDto, Moderator.class);
         moderator.setHashPassword(passwordEncoder.encode(moderatorDto.getPassword()));
-        moderator.setEnabled(false);
+        moderator.setEnabled(true);
         moderator.setAccountNonLocked(true);
         moderator.setInitialPasswordChanged(true);
         moderator.setRole(Role.ROLE_MODERATOR);
