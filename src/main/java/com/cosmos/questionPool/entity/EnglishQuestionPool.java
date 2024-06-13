@@ -42,4 +42,10 @@ public class EnglishQuestionPool extends AuditModel {
     // if additional question of previously asked unclear question
     @Column(name = "prev_ques_id")
     private Long prevEngQuesId;
+
+    // if query is directly answer by astrology moderator ;
+    @Column(name = "fk_astro_mod_id")
+    private Long assignedAstroModId;
+
+
 }

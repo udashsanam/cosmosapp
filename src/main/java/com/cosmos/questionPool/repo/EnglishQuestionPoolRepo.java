@@ -52,4 +52,7 @@ public interface EnglishQuestionPoolRepo extends JpaRepository<EnglishQuestionPo
             "     order by year(created_at),month(created_at);",
             nativeQuery = true)
     List<MonthlyRevenueReport> selectMonthlyRevenue(Integer year);
+
+    @Query(value = "SELECT * FROM tbl_eng_ques_pool eq WHERE eq.fk_astro_mod_id=?1 AND ques_sts=0 LIMIT 0,1", nativeQuery = true)
+    EnglishQuestionPool selectAstroModeratorUnfinishedQuestion(Long moderatorId);
 }

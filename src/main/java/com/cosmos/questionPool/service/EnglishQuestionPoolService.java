@@ -111,6 +111,14 @@ public class EnglishQuestionPoolService {
         return englishQuestionPoolRepo.save(englishQuestionPool);
     }
 
+    // Assigns question to moderator
+    public EnglishQuestionPool assignToAstroModerator(EnglishQuestionPool englishQuestionPool) {
+        CurrentlyLoggedInUser currentlyLoggedInUser = (CurrentlyLoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        englishQuestionPool.setQuestionStatus(QuestionStatus.Assigned);
+        englishQuestionPool.setAssignedAstroModId(currentlyLoggedInUser.getCurrentlyLoggedInUserId());
+        return englishQuestionPoolRepo.save(englishQuestionPool);
+    }
+
     // skip functionality for moderator
     public void pushQuestionBackToPool(Long questionId) {
         EnglishQuestionPool englishQuestionPool = findQuestionById(questionId);
