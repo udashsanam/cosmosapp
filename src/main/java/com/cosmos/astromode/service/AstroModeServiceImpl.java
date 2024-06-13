@@ -7,6 +7,8 @@ import com.cosmos.astromode.enitity.AstroModeEntity;
 import com.cosmos.astromode.repo.AstroModeRepo;
 import com.cosmos.common.exception.CustomException;
 import com.cosmos.login.entity.Role;
+import com.cosmos.moderator.dto.ModeratorDto;
+import com.cosmos.moderator.entity.Moderator;
 import com.cosmos.user.dto.UserDto;
 import com.cosmos.user.entity.User;
 import org.modelmapper.ModelMapper;
@@ -51,5 +53,36 @@ public class AstroModeServiceImpl implements IAstroModeService {
 //        appUserService.createPasswordResetTokenForUser(newAstrologer, uniqueCode);
 
         return  modelMapper.map(newAstrologer, AstroModeDto.class);
+    }
+
+    @Override
+    public AstroModeDto updateModerator(Long astroModeId, AstroModeDto astroModeDto) {
+
+        AstroModeEntity moderator = astroModeRepo.findByUserId(astroModeId);
+        if (moderator == null) {
+            throw new CustomException("No Astro moderator  found under this id: " + astroModeId, HttpStatus.NOT_FOUND);
+        }
+
+        moderator.setFirstName(astroModeDto.getFirstName());
+        moderator.setLastName(astroModeDto.getLastName());
+        moderator.setCity(astroModeDto.getCity());
+        moderator.setCountry(astroModeDto.getCountry());
+        moderator.setState(astroModeDto.getState());
+        moderator.setGender(astroModeDto.getGender());
+        moderator.setPhoneNumber(astroModeDto.getPhoneNumber());
+        moderator.setProfileImageUrl(astroModeDto.getProfileImageUrl());
+
+        return modelMapper.map(astroModeRepo.save(moderator),
+                AstroModeDto.class);
+    }
+
+    @Override
+    public AstroModeDto findModeratorById(Long id) {
+        return modelMapper.map(astroModeRepo.findByUserId(id), AstroModeDto.class);
+    }
+
+    @Override
+    public void deleteModeratorById(Long id) {
+
     }
 }

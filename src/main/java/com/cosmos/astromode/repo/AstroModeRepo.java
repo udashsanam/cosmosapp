@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AstroModeRepo extends JpaRepository<AstroModeEntity, Long> {
     AstroModeEntity findByEmail(String emaail);
+    AstroModeEntity findByUserId(Long userId);
 }
