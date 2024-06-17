@@ -163,7 +163,7 @@ public class AstroModeServiceImpl implements IAstroModeService {
         // First Find previously unfinished task. i.e if moderator has not submitted
         //
         //todo: create for astro moderator
-        QuestionAnswerPoolForModerator previousAssignedTask = moderatorService.findAstroModeratorUnfinishedTask();
+        QuestionAnswerPoolForModerator previousAssignedTask = this.findAstroModeratorUnfinishedTask();
         if (previousAssignedTask != null) {
             return previousAssignedTask;
         }
@@ -175,7 +175,7 @@ public class AstroModeServiceImpl implements IAstroModeService {
             System.out.println("inside nepali answer pool != null");
             CurrentlyLoggedInUser currentlyLoggedInUser = (CurrentlyLoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             nepaliAnswerPool.setStatus(QuestionStatus.Assigned);
-            nepaliAnswerPool.setModeratorId(currentlyLoggedInUser.getCurrentlyLoggedInUserId());
+            nepaliAnswerPool.setAstroModeId(currentlyLoggedInUser.getCurrentlyLoggedInUserId());
             nepaliAnswerPoolRepo.save(nepaliAnswerPool);
 
             currentJobForModerator.setCurrentJobType("nepali-answer");
@@ -203,5 +203,36 @@ public class AstroModeServiceImpl implements IAstroModeService {
     private Long getCurrentUserId() {
         CurrentlyLoggedInUser currentlyLoggedInUser = (CurrentlyLoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return currentlyLoggedInUser.getCurrentlyLoggedInUserId();
+    }
+
+    @Override
+    public QuestionAnswerPoolForModerator findAstroModeratorUnfinishedTask(){
+        QuestionAnswerPoolForModerator questionAnswerPoolForModerator = new QuestionAnswerPoolForModerator();
+        CurrentJobForModerator currentJobForModerator = new CurrentJobForModerator();
+        CurrentlyLoggedInUser currentlyLoggedInUser = (CurrentlyLoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        NepaliAnswerPool nepaliAnswerPool = nepaliAnswerPoolRepo.selectModeratorUnfinishedAnswer(currentlyLoggedInUser.getCurrentlyLoggedInUserId());
+        if(nepaliAnswerPool != null){
+            currentJobForModerator.setCurrentJobType("nepali-answer");
+            currentJobForModerator.setNepaliAnswer(nepaliAnswerPool);
+
+            questionAnswerPoolForModerator.setCurrentJob(currentJobForModerator);
+            questionAnswerPoolForModerator.setUserDetails(userService.findUserDetailsById(nepaliAnswerPool.getUserId()));
+            questionAnswerPoolForModerator.setQuestionAnswerHistoryList(userService.findPrevQuestionHistoryOfUser(nepaliAnswerPool.getUserId()));
+            return questionAnswerPoolForModerator;
+        }
+
+        EnglishQuestionPool englishQuestionPool = englishQuestionPoolRepo.selectAstroModeratorUnfinishedQuestion(currentlyLoggedInUser.getCurrentlyLoggedInUserId());
+        if(englishQuestionPool != null){
+            currentJobForModerator.setCurrentJobType("english-question");
+            currentJobForModerator.setEnglishQuestion(englishQuestionPool);
+
+            questionAnswerPoolForModerator.setCurrentJob(currentJobForModerator);
+            questionAnswerPoolForModerator.setUserDetails(userService.findUserDetailsById(englishQuestionPool.getUserId()));
+            questionAnswerPoolForModerator.setQuestionAnswerHistoryList(userService.findPrevQuestionHistoryOfUser(englishQuestionPool.getUserId()));
+            return questionAnswerPoolForModerator;
+        }
+
+        return null;
     }
 }

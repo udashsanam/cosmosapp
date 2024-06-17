@@ -29,4 +29,8 @@ public interface NepaliAnswerPoolRepo extends JpaRepository<NepaliAnswerPool, Lo
     @Query(value = "SELECT count(eng_ans_id) as dailyAstrologerWorkCount FROM tbl_final_question_answer WHERE DATE(created_at) = CURDATE()",
             nativeQuery = true)
     Integer selectDailyAstrologerWorkCount();
+
+
+    @Query(value = "SELECT * FROM tbl_answers_from_astrologer nr WHERE nr.fk_astro_mod_id=?1 AND nr.ques_sts=0 LIMIT 0,1", nativeQuery = true)
+    NepaliAnswerPool selectAstoModeratorUnfinishedAnswer(Long modId);
 }

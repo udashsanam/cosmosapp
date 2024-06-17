@@ -37,4 +37,8 @@ public class NepaliAnswerPool extends AuditModel {
     @JsonIgnore
     @Column(name = "ques_sts")
     private QuestionStatus status;
+
+    @JsonIgnore
+    @Column(name = "fk_astro_mod_id")
+    private Long astroModeId;
 }

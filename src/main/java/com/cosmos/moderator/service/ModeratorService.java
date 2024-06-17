@@ -18,5 +18,4 @@ public interface ModeratorService {
 
     void deleteModeratorById(Long id);
 
-    QuestionAnswerPoolForModerator findAstroModeratorUnfinishedTask();
 }

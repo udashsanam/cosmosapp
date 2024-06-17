@@ -20,4 +20,7 @@ public interface IAstroModeService {
     QuestionAnswerPoolForModerator fetchAstroModeCurrentJob();
 
     EnglishAnswerPool saveFinalAnswer(AstroModeReplyToUser astroModeReplyToUser, Long userId);
+
+    QuestionAnswerPoolForModerator findAstroModeratorUnfinishedTask();
+
 }

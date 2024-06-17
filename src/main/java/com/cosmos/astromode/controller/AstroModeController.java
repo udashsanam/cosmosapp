@@ -6,6 +6,7 @@ import com.cosmos.astromode.dto.AstroModeReplyToUser;
 import com.cosmos.astromode.service.IAstroModeService;
 import com.cosmos.common.exception.CustomException;
 import com.cosmos.login.dto.CurrentlyLoggedInUser;
+import com.cosmos.moderator.dto.AstrologerReplyToEng;
 import com.cosmos.moderator.dto.CurrentJobForModerator;
 import com.cosmos.moderator.dto.QuestionAnswerPoolForModerator;
 import com.cosmos.moderator.service.ModeratorService;
@@ -62,6 +63,29 @@ public class AstroModeController {
     private Long getCurrentUserId() {
         CurrentlyLoggedInUser currentlyLoggedInUser = (CurrentlyLoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return currentlyLoggedInUser.getCurrentlyLoggedInUserId();
+    }
+
+
+    @GetMapping("/fetch-task")
+    public QuestionAnswerPoolForModerator getUnAssignedQuestionFromPool() {
+        return iAstroModeService.fetchAstroModeCurrentJob();
+    }
+
+
+    @PostMapping(value = "/ua-astrologerReply/post", consumes = "application/json", produces = "application/json")
+    @ResponseBody
+    public EnglishAnswerPool convertNepReplyToEng(@RequestBody AstrologerReplyToEng astroRep) {
+        if (astroRep.getTranslatedAns() == null || astroRep.getTranslatedAns().equals("")) {
+            throw new CustomException("Please provide a translated answer.", HttpStatus.UNPROCESSABLE_ENTITY);
+        } else {
+            NepaliAnswerPool reply = nepaliAnswerPoolRepo.getOneByNepQuestionIdAndUserId(astroRep.getNepQuestionId(), astroRep.getUserId());
+            if (reply != null) {
+                reply.setModeratorId(getCurrentUserId());
+                reply.setStatus(QuestionStatus.Clear);
+                nepaliAnswerPoolRepo.save(reply);
+            }
+            return storeTranslatedReply(astroRep, reply.getId());
+        }
     }
 
 
