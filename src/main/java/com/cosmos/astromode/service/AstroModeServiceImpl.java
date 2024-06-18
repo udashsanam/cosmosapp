@@ -10,6 +10,7 @@ import com.cosmos.astromode.repo.AstroModeRepo;
 import com.cosmos.common.exception.CustomException;
 import com.cosmos.login.dto.CurrentlyLoggedInUser;
 import com.cosmos.login.entity.Role;
+import com.cosmos.moderator.dto.AstrologerReplyToEng;
 import com.cosmos.moderator.dto.CurrentJobForModerator;
 import com.cosmos.moderator.dto.ModeratorDto;
 import com.cosmos.moderator.dto.QuestionAnswerPoolForModerator;
@@ -18,9 +19,11 @@ import com.cosmos.moderator.service.ModeratorService;
 import com.cosmos.notification.model.NotificationResponse;
 import com.cosmos.questionPool.entity.EnglishAnswerPool;
 import com.cosmos.questionPool.entity.EnglishQuestionPool;
+import com.cosmos.questionPool.entity.NepaliQuestionPool;
 import com.cosmos.questionPool.entity.QuestionStatus;
 import com.cosmos.questionPool.repo.EnglishAnswerPoolRepo;
 import com.cosmos.questionPool.repo.EnglishQuestionPoolRepo;
+import com.cosmos.questionPool.repo.NepaliQuestionPoolRepo;
 import com.cosmos.questionPool.service.EnglishQuestionPoolService;
 import com.cosmos.user.dto.UserDto;
 import com.cosmos.user.entity.User;
@@ -45,12 +48,13 @@ public class AstroModeServiceImpl implements IAstroModeService {
     private final NepaliAnswerPoolRepo nepaliAnswerPoolRepo;
     private final ModeratorService moderatorService;
     private final EnglishQuestionPoolService englishQuestionPoolService;
+    private final NepaliQuestionPoolRepo nepaliQuestionPoolRepo;
 
     public AstroModeServiceImpl(ModelMapper modelMapper, PasswordEncoder passwordEncoder,
                                 AstroModeRepo astroModeRepo, EnglishAnswerPoolRepo englishAnswerPoolRepo,
                                 UserServiceImpl userService, EnglishQuestionPoolRepo englishQuestionPoolRepo,
                                 NepaliAnswerPoolRepo nepaliAnswerPoolRepo, ModeratorService moderatorService,
-                                EnglishQuestionPoolService englishQuestionPoolService) {
+                                EnglishQuestionPoolService englishQuestionPoolService, NepaliQuestionPoolRepo nepaliQuestionPoolRepo) {
         this.modelMapper = modelMapper;
         this.passwordEncoder = passwordEncoder;
         this.astroModeRepo = astroModeRepo;
@@ -60,6 +64,7 @@ public class AstroModeServiceImpl implements IAstroModeService {
         this.nepaliAnswerPoolRepo = nepaliAnswerPoolRepo;
         this.moderatorService = moderatorService;
         this.englishQuestionPoolService = englishQuestionPoolService;
+        this.nepaliQuestionPoolRepo = nepaliQuestionPoolRepo;
     }
 
     @Override
@@ -128,14 +133,13 @@ public class AstroModeServiceImpl implements IAstroModeService {
         EnglishAnswerPool queryWithReply = englishAnswerPoolRepo.getOneByQuestionId(astroModeReplyToUser.getEngQuesId());
         if (queryWithReply == null) {
             EnglishAnswerPool qwr = new EnglishAnswerPool();
-            qwr.setQuestionId(queryWithReply.getQuestionId());
+            qwr.setQuestionId(astroModeReplyToUser.getEngQuesId());
             qwr.setQuestion(engQsn.getEngQuestion());
             qwr.setAnswer(astroModeReplyToUser.getTranslatedAns());
 
             qwr.setUserId(engQsn.getUserId());
-            qwr.setAstroModId(getCurrentUserId());
-            qwr.setEngToNepQsnMod(engQsn.getAssignedModId());
-            qwr.setNepToEngRepMod(getCurrentUserId());
+            qwr.setNepToEngRepAstroMod(getCurrentUserId());
+            qwr.setEngToNepQsnAstroMod(engQsn.getAssignedModId());
 
             qwr.setCreatedAt(new Date());
             qwr.setUpdatedAt(new Date());
@@ -234,5 +238,46 @@ public class AstroModeServiceImpl implements IAstroModeService {
         }
 
         return null;
+    }
+
+    @Override
+    public EnglishAnswerPool storeTranslatedReply(AstrologerReplyToEng astroRep, Long id) {
+
+        /*fetch question from nepaliQuestionPool*/
+        NepaliQuestionPool nepQsn = nepaliQuestionPoolRepo.findById(astroRep.getNepQuestionId())
+                .orElseThrow(() -> new CustomException("No question pool found.", HttpStatus.NOT_FOUND));
+        EnglishQuestionPool engQsn = englishQuestionPoolService.findQuestionById(nepQsn.getEngQsnId());
+
+        /*check if this question has already an entry*/
+        EnglishAnswerPool queryWithReply = englishAnswerPoolRepo.getOneByQuestionId(nepQsn.getEngQsnId());
+        if (queryWithReply == null) {
+            EnglishAnswerPool qwr = new EnglishAnswerPool();
+            qwr.setQuestionId(nepQsn.getEngQsnId());
+            qwr.setQuestion(engQsn.getEngQuestion());
+            qwr.setAnswerId(id);
+            qwr.setAnswer(astroRep.getTranslatedAns());
+
+            qwr.setUserId(astroRep.getUserId());
+            qwr.setAstroId(nepQsn.getAssignedAstroId());
+
+            qwr.setEngToNepQsnMod(engQsn.getAssignedModId());
+            qwr.setEngToNepQsnAstroMod(engQsn.getAssignedAstroModId());
+            qwr.setNepToEngRepAstroMod(getCurrentUserId());
+
+            qwr.setCreatedAt(new Date());
+            qwr.setUpdatedAt(new Date());
+
+            NotificationResponse notificationResponse = userService.sendAnswerToUserViaNotification(astroRep.getUserId(), astroRep.getTranslatedAns(), nepQsn.getAssignedAstroId(), nepQsn.getEngQsnId());
+
+            qwr.setSentStatus(notificationResponse.isSuccess());
+            qwr.setMessageId(notificationResponse.getMessageId());
+            qwr.setFailureMsg(notificationResponse.getFailureMsg());
+
+            return englishAnswerPoolRepo.save(qwr);
+        } else {
+            queryWithReply.setAnswer(astroRep.getTranslatedAns());
+            queryWithReply.setUpdatedAt(new Date());
+            return englishAnswerPoolRepo.save(queryWithReply);
+        }
     }
 }

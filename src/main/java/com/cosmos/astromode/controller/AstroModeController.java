@@ -30,14 +30,17 @@ public class AstroModeController {
 
     private final IAstroModeService iAstroModeService;
     private final EnglishQuestionPoolRepo englishQuestionPoolRepo;
+    private final NepaliAnswerPoolRepo nepaliAnswerPoolRepo;
 
 
 
-    public AstroModeController(IAstroModeService iAstroModeService, EnglishQuestionPoolRepo englishQuestionPoolRepo) {
+    public AstroModeController(IAstroModeService iAstroModeService, EnglishQuestionPoolRepo englishQuestionPoolRepo,
+                               NepaliAnswerPoolRepo nepaliAnswerPoolRepo) {
         this.iAstroModeService = iAstroModeService;
         this.englishQuestionPoolRepo = englishQuestionPoolRepo;
 
 
+        this.nepaliAnswerPoolRepo = nepaliAnswerPoolRepo;
     }
 
 
@@ -80,11 +83,11 @@ public class AstroModeController {
         } else {
             NepaliAnswerPool reply = nepaliAnswerPoolRepo.getOneByNepQuestionIdAndUserId(astroRep.getNepQuestionId(), astroRep.getUserId());
             if (reply != null) {
-                reply.setModeratorId(getCurrentUserId());
+                reply.setAstroModeId(getCurrentUserId());
                 reply.setStatus(QuestionStatus.Clear);
                 nepaliAnswerPoolRepo.save(reply);
             }
-            return storeTranslatedReply(astroRep, reply.getId());
+            return iAstroModeService.storeTranslatedReply(astroRep, reply.getId());
         }
     }
 

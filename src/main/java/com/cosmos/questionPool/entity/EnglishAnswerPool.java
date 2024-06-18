@@ -44,8 +44,14 @@ public class EnglishAnswerPool extends AuditModel {
     @Column(name = "fk_mod_eng_nep_qsn")
     private Long engToNepQsnMod;
 
+    @Column(name = "fk_astro_mod_eng_nep_qsn")
+    private Long engToNepQsnAstroMod;
+
     @Column(name = "fk_mod_nep_eng_rep")
     private Long nepToEngRepMod;
+
+    @Column(name = "fk_astro_mod_nep_eng_rep")
+    private Long nepToEngRepAstroMod;
 
     @Column(name = "sent_status", columnDefinition = "tinyint(1)")
     private boolean sentStatus;
@@ -60,7 +66,6 @@ public class EnglishAnswerPool extends AuditModel {
     @Column(name = "question_status", length = 10)
     private String questionStatus;
 
-    @Column(name = "fk_astro_mod_id")
-    private Long astroModId;
+
 
 }

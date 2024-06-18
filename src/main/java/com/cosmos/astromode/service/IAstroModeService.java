@@ -2,6 +2,7 @@ package com.cosmos.astromode.service;
 
 import com.cosmos.astromode.dto.AstroModeDto;
 import com.cosmos.astromode.dto.AstroModeReplyToUser;
+import com.cosmos.moderator.dto.AstrologerReplyToEng;
 import com.cosmos.moderator.dto.QuestionAnswerPoolForModerator;
 import com.cosmos.questionPool.entity.EnglishAnswerPool;
 import com.cosmos.user.dto.UserDto;
@@ -23,4 +24,5 @@ public interface IAstroModeService {
 
     QuestionAnswerPoolForModerator findAstroModeratorUnfinishedTask();
 
+    EnglishAnswerPool storeTranslatedReply(AstrologerReplyToEng astroRep, Long id);
 }
