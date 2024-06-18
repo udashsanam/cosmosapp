@@ -41,6 +41,8 @@ public class EnglishAnswerPool extends AuditModel {
     @Column(name = "fk_astro_id")
     private Long astroId;
 
+
+
     @Column(name = "fk_mod_eng_nep_qsn")
     private Long engToNepQsnMod;
 
@@ -65,6 +67,9 @@ public class EnglishAnswerPool extends AuditModel {
     @ColumnDefault(value = "'CLEAR'")
     @Column(name = "question_status", length = 10)
     private String questionStatus;
+
+    @Column(name = "fk_astro_mod_id")
+    private Long astroModId;
 
 
 

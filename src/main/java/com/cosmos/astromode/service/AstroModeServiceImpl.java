@@ -138,8 +138,9 @@ public class AstroModeServiceImpl implements IAstroModeService {
             qwr.setAnswer(astroModeReplyToUser.getTranslatedAns());
 
             qwr.setUserId(engQsn.getUserId());
-            qwr.setNepToEngRepAstroMod(getCurrentUserId());
-            qwr.setEngToNepQsnAstroMod(engQsn.getAssignedModId());
+//            qwr.setNepToEngRepAstroMod(getCurrentUserId());
+//            qwr.setEngToNepQsnAstroMod(engQsn.getAssignedModId());
+            qwr.setAstroModId(getCurrentUserId());
 
             qwr.setCreatedAt(new Date());
             qwr.setUpdatedAt(new Date());

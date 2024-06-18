@@ -3,9 +3,13 @@ package com.cosmos.user.service;
 import com.cosmos.admin.entity.Message;
 import com.cosmos.admin.repo.MessageRepo;
 import com.cosmos.astrologer.dto.AstrologerDto;
+import com.cosmos.astrologer.entity.Astrologer;
 import com.cosmos.astrologer.projection.AstrologerReplyProjection;
+import com.cosmos.astrologer.repo.AstrologerRepo;
 import com.cosmos.astrologer.repo.NepaliAnswerPoolRepo;
 import com.cosmos.astrologer.service.AstrologerService;
+import com.cosmos.astromode.enitity.AstroModeEntity;
+import com.cosmos.astromode.repo.AstroModeRepo;
 import com.cosmos.common.exception.CustomException;
 import com.cosmos.common.security.JwtTokenProvider;
 import com.cosmos.credit.entity.Credit;
@@ -74,6 +78,12 @@ public class UserServiceImpl {
 
     @Autowired
     private UserChangeLogRepo userChangeLogRepo;
+
+    @Autowired
+    private AstrologerRepo astrologerRepo;
+
+    @Autowired
+    private AstroModeRepo astroModeRepo;
 
     private static Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
@@ -222,15 +232,19 @@ public class UserServiceImpl {
 
     public NotificationResponse sendAnswerToUserViaNotification(Long userId, String answer, Long astroId, Long questionId) {
         logger.info("Preparing to send notification to user...");
-
-        AstrologerDto astrologerDetails = astrologerService.findById(astroId);
+        Astrologer astrologer = astrologerRepo.findById(astroId).orElse(null);
+        AstrologerDto astrologerDto = null;
+        AstroModeEntity astroModeEntity = astroModeRepo.findByUserId(astroId);
+         if (astrologer != null) {
+             astrologerDto =  modelMapper.map(astrologer, AstrologerDto.class);
+         }
 
         NotificationDataPayload answerDataPayLoad = new NotificationDataPayload();
         answerDataPayLoad.setEngQuestionId(questionId.toString());
         answerDataPayLoad.setStatus("CLEAR");
         answerDataPayLoad.setMessage(answer);
-        answerDataPayLoad.setRepliedBy(astrologerDetails.getFirstName() + " " + astrologerDetails.getLastName());
-        answerDataPayLoad.setProfileImgUrl(astrologerDetails.getProfileImageUrl());
+        answerDataPayLoad.setRepliedBy(astrologer !=null? astrologer.getFirstName() + " " + astrologer.getLastName() : astroModeEntity.getFirstName() + " " + astroModeEntity.getLastName());
+        answerDataPayLoad.setProfileImgUrl(astrologer != null? astrologer.getProfileImageUrl() : astroModeEntity.getProfileImageUrl());
 
         Notification notification = new Notification("Answer of your question", "Answer", "FLUTTER_NOTIFICATION_CLICK");
 
