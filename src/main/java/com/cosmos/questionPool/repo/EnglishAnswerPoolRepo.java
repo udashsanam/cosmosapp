@@ -24,7 +24,7 @@ public interface EnglishAnswerPoolRepo extends JpaRepository<EnglishAnswerPool, 
             "INNER JOIN tbl_answers_from_astrologer nepR " +
             "ON nepR.id = engR.fk_nep_ans_id " +
             "INNER JOIN tbl_users users " +
-            "ON users.user_id = nepR.fk_mod_id " +
+            "ON users.user_id = nepR.fk_mod_id or users.user_id = nepR.fk_astro_mod_id  " +
             "WHERE engR.fk_nep_ans_id = ?1", nativeQuery = true)
     EnglishReplyProjection selectEngReplyByNepAnswerId(Long id);
 
