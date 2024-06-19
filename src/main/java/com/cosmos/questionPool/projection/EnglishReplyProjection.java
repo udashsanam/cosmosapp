@@ -4,4 +4,5 @@ public interface EnglishReplyProjection {
     String getEngReply();
     String getTranslatedBy();
     String getTranslatedOn();
+    String getRole();
 }

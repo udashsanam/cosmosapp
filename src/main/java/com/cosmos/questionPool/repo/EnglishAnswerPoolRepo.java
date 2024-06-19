@@ -96,4 +96,14 @@ public interface EnglishAnswerPoolRepo extends JpaRepository<EnglishAnswerPool, 
             , nativeQuery = true)
     List<QuestionAnswerHistory> findQuestionAnswerHistory(Long userId);
 
+
+    @Query(value = "SELECT engR.answer as engReply,\n" +
+            "            engR.created_at AS translatedOn, CONCAT(users.first_name,' ',users.last_name) as translatedBy, \n" +
+            "'astromod' as role" +
+            "            FROM tbl_final_question_answer engR\n" +
+            "            inner JOIN tbl_users users\n" +
+            "            ON users.user_id = engR.fk_astro_mod_id\n" +
+            "            WHERE engR.fk_eng_qsn_id = ?1 ", nativeQuery = true)
+    EnglishReplyProjection selectEngReplyByEnglishQuestionId(Long id);
+
 }

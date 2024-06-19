@@ -218,6 +218,9 @@ public class UserServiceImpl {
 
                 if (nepaliAnswer != null) {
                     englishAnswer = englishAnswerPoolRepo.selectEngReplyByNepAnswerId(nepaliAnswer.getNepAnswerId());
+                }else {
+                    System.out.println(prevEngQuestion.getEngQuestionId());
+                    englishAnswer = englishAnswerPoolRepo.selectEngReplyByEnglishQuestionId(prevEngQuestion.getEngQuestionId());
                 }
 
                 questionAnswerHistory.setTranslatedEngQuestion(translatedEngQuestion);
