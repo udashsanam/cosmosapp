@@ -10,18 +10,22 @@ import com.cosmos.common.exception.CustomException;
 import com.cosmos.common.security.JwtTokenProvider;
 import com.cosmos.credit.entity.Credit;
 import com.cosmos.credit.service.CreditServiceImpl;
+import com.cosmos.login.entity.AppUser;
 import com.cosmos.login.entity.Role;
 import com.cosmos.login.service.impl.AppUserServiceImpl;
 import com.cosmos.notification.model.Notification;
 import com.cosmos.notification.model.NotificationDataPayload;
 import com.cosmos.notification.model.NotificationResponse;
 import com.cosmos.notification.service.NotificationService;
+import com.cosmos.questionPool.entity.EnglishAnswerPool;
+import com.cosmos.questionPool.entity.EnglishQuestionPool;
 import com.cosmos.questionPool.projection.EnglishQuestionProjection;
 import com.cosmos.questionPool.projection.EnglishReplyProjection;
 import com.cosmos.questionPool.projection.NepaliQuestionProjection;
 import com.cosmos.questionPool.repo.EnglishAnswerPoolRepo;
 import com.cosmos.questionPool.repo.EnglishQuestionPoolRepo;
 import com.cosmos.questionPool.repo.NepaliQuestionPoolRepo;
+import com.cosmos.user.dto.RateDto;
 import com.cosmos.user.dto.UserChangeLogDto;
 import com.cosmos.user.dto.UserDto;
 import com.cosmos.user.dto.UserQuestionAnswerHistory;
@@ -269,5 +273,16 @@ public class UserServiceImpl {
         user.setState(userDto.getState());
         user.setCity(userDto.getCity());
         user.setDeviceToken(userDto.getDeviceToken());
+    }
+
+    public EnglishAnswerPool rateAnswer(RateDto rateDto) {
+        AppUser user = userRepository.findByDeviceId(rateDto.getDeviceId());
+        EnglishAnswerPool englishAnswerPool = englishAnswerPoolRepo.findById(rateDto.getEngAnswerId()).orElse(null);
+        if (englishAnswerPool == null) { throw new CustomException("No answer found", HttpStatus.NOT_FOUND);
+        }
+        if(!englishAnswerPool.getUserId().equals(user.getUserId())) throw new CustomException("Wrong user id", HttpStatus.UNAUTHORIZED);
+        if(null != englishAnswerPool.getRating()) throw new CustomException("Already rated", HttpStatus.ALREADY_REPORTED);
+        englishAnswerPool.setRating(rateDto.getRate());
+        return englishAnswerPoolRepo.save(englishAnswerPool);
     }
 }

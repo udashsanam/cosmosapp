@@ -11,4 +11,6 @@ public interface QuestionAnswerHistory {
     String getProfileImgUrl();
     QuestionStatus getStatus();
     Date getCreatedAt();
+    Long getEngAnswerId();
+    Integer getRating();
 }

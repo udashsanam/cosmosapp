@@ -9,6 +9,7 @@ import com.cosmos.common.exception.CustomException;
 import com.cosmos.login.dto.CurrentlyLoggedInUser;
 import com.cosmos.questionPool.entity.NepaliQuestionPool;
 import com.cosmos.questionPool.entity.QuestionStatus;
+import com.cosmos.questionPool.repo.EnglishAnswerPoolRepo;
 import com.cosmos.questionPool.repo.NepaliQuestionPoolRepo;
 import com.cosmos.user.entity.User;
 import com.cosmos.user.repo.UserRepository;
@@ -27,12 +28,15 @@ public class AstrologerController {
     private NepaliQuestionPoolRepo nepQsnRepo;
     private UserRepository userRepo;
     private NepaliAnswerPoolRepo nepaliAnswerPoolRepo;
+    private EnglishAnswerPoolRepo englishAnswerPoolRepo;
 
     @Autowired
-    public AstrologerController(NepaliQuestionPoolRepo nepQsnRepo, UserRepository userRepo, NepaliAnswerPoolRepo nepaliAnswerPoolRepo) {
+    public AstrologerController(NepaliQuestionPoolRepo nepQsnRepo, UserRepository userRepo, NepaliAnswerPoolRepo nepaliAnswerPoolRepo,
+                                EnglishAnswerPoolRepo englishAnswerPoolRepo) {
         this.nepQsnRepo = nepQsnRepo;
         this.userRepo = userRepo;
         this.nepaliAnswerPoolRepo = nepaliAnswerPoolRepo;
+        this.englishAnswerPoolRepo = englishAnswerPoolRepo;
     }
 
     /*Fetch translated unassigned question*/
@@ -87,7 +91,10 @@ public class AstrologerController {
 
             if (!possibleDuplicateUsers.isEmpty()) {
                 /*Get all questions asked previously by possible duplicate users*/
-                possibleDuplicateUsers.forEach(user1 -> nepQsnRepo.findAllByUserId(user1.getUserId())
+                possibleDuplicateUsers.forEach(user1 -> {
+
+
+                        nepQsnRepo.findAllByUserId(user1.getUserId())
                         .stream()
                         .filter(qsn -> qsn.getNepQuestion() != null)
                         .forEach(qsn -> {
@@ -103,7 +110,7 @@ public class AstrologerController {
                             } else question1.setAnswer("N/A");
 
                             previouslyAskedQuestions.add(question1);
-                        }));
+                        }); });
                 questionerDetails.setPreviousQueries(previouslyAskedQuestions);
 
                 /*Remove the user itself who have asked the question and set remaining users as possible duplicate users*/

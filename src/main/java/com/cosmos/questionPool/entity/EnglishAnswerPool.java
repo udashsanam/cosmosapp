@@ -60,4 +60,7 @@ public class EnglishAnswerPool extends AuditModel {
     @Column(name = "question_status", length = 10)
     private String questionStatus;
 
+    @Column(name = "rating", length = 1)
+    private Integer rating;
+
 }
