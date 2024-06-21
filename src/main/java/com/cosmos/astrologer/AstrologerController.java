@@ -92,8 +92,15 @@ public class AstrologerController {
             if (!possibleDuplicateUsers.isEmpty()) {
                 /*Get all questions asked previously by possible duplicate users*/
                 possibleDuplicateUsers.forEach(user1 -> {
-
-
+                        englishAnswerPoolRepo.getHistoryAnswerByAstromode(user1.getUserId()).stream().forEach(previouslyAskedQuestions1 -> {
+                            PreviouslyAskedQuestions question1 = new PreviouslyAskedQuestions();
+                            question1.setAnswer(previouslyAskedQuestions1.getAnswer());
+                            question1.setRole(previouslyAskedQuestions1.getRole());
+                            question1.setQuestionId(previouslyAskedQuestions1.getQuestionId());
+                            question1.setQuestion(previouslyAskedQuestions1.getQuestion());
+                            question1.setUserId(previouslyAskedQuestions1.getUserId());
+                            previouslyAskedQuestions.add(question1);
+                        });
                         nepQsnRepo.findAllByUserId(user1.getUserId())
                         .stream()
                         .filter(qsn -> qsn.getNepQuestion() != null)

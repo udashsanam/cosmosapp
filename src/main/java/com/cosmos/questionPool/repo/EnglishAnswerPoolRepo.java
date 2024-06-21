@@ -1,9 +1,11 @@
 package com.cosmos.questionPool.repo;
 
+import com.cosmos.astrologer.dto.PreviouslyAskedQuestions;
 import com.cosmos.astrologer.projection.AstrologerWorkReport;
 import com.cosmos.moderator.dto.ModeratorWorkReport;
 import com.cosmos.questionPool.entity.EnglishAnswerPool;
 import com.cosmos.questionPool.projection.EnglishReplyProjection;
+import com.cosmos.questionPool.projection.PreviouslyAskedQuestionsProjection;
 import com.cosmos.questionPool.projection.QuestionAnswerHistory;
 
 import org.springframework.data.domain.Page;
@@ -107,5 +109,17 @@ public interface EnglishAnswerPoolRepo extends JpaRepository<EnglishAnswerPool, 
             "            ON users.user_id = engR.fk_astro_mod_id\n" +
             "            WHERE engR.fk_eng_qsn_id = ?1 ", nativeQuery = true)
     EnglishReplyProjection selectEngReplyByEnglishQuestionId(Long id);
+
+
+    @Query(value = "select engQues.eng_ques_id as questionId,\n" +
+            "       engQues.eng_question as question ,\n" +
+            "       fn.answer as answer,\n" +
+            "       fn.fk_user_id as userId ,\n" +
+            "       'astromod' as role \n" +
+            "       from tbl_final_question_answer fn join tbl_eng_ques_pool engQues on fn.fk_eng_qsn_id = engQues.eng_ques_id\n" +
+            "       where fn.fk_astro_mod_id is not null and fn.fk_user_id = ?1", nativeQuery = true)
+    List<PreviouslyAskedQuestionsProjection> getHistoryAnswerByAstromode(Long userId);
+
+
 
 }

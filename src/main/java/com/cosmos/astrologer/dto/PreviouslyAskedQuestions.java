@@ -13,4 +13,5 @@ public class PreviouslyAskedQuestions {
     //can be null too
     private String answer;
     private Long userId;
+    private String role;
 }
