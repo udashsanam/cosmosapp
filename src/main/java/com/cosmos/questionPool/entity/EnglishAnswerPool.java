@@ -73,4 +73,7 @@ public class EnglishAnswerPool extends AuditModel {
 
 
 
+    @Column(name = "rating", length = 1)
+    private Integer rating;
+
 }

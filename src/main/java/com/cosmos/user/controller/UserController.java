@@ -16,6 +16,7 @@ import com.cosmos.credit.entity.Credit;
 import com.cosmos.credit.service.CreditServiceImpl;
 import com.cosmos.login.dto.CurrentlyLoggedInUser;
 import com.cosmos.questionPool.dto.EnglishQuestionDto;
+import com.cosmos.questionPool.entity.EnglishAnswerPool;
 import com.cosmos.questionPool.entity.EnglishQuestionPool;
 import com.cosmos.questionPool.repo.EnglishAnswerPoolRepo;
 import com.cosmos.questionPool.service.EnglishQuestionPoolService;
@@ -274,5 +275,10 @@ public class UserController {
     @GetMapping(value = "/get-detail-change-history")
     public List<UserChangeLogDto> getChangeHistory(@RequestParam("userId") Long userId){
         return  userService.getAllChangeHistory(userId);
+    }
+
+    @PostMapping(value = "/rate-answer")
+    public EnglishAnswerPool rateAnswer(@Valid @RequestBody RateDto rateDto) {
+        return userService.rateAnswer(rateDto);
     }
 }
