@@ -216,7 +216,7 @@ public class AstroModeServiceImpl implements IAstroModeService {
         CurrentJobForModerator currentJobForModerator = new CurrentJobForModerator();
         CurrentlyLoggedInUser currentlyLoggedInUser = (CurrentlyLoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        NepaliAnswerPool nepaliAnswerPool = nepaliAnswerPoolRepo.selectModeratorUnfinishedAnswer(currentlyLoggedInUser.getCurrentlyLoggedInUserId());
+        NepaliAnswerPool nepaliAnswerPool = nepaliAnswerPoolRepo.selectAstoModeratorUnfinishedAnswer(currentlyLoggedInUser.getCurrentlyLoggedInUserId());
         if(nepaliAnswerPool != null){
             currentJobForModerator.setCurrentJobType("nepali-answer");
             currentJobForModerator.setNepaliAnswer(nepaliAnswerPool);
