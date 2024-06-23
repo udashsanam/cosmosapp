@@ -2,10 +2,13 @@ package com.cosmos.questionPool.service;
 
 import com.cosmos.admin.entity.Message;
 import com.cosmos.admin.repo.MessageRepo;
+import com.cosmos.astromode.enitity.AstroModeEntity;
+import com.cosmos.astromode.repo.AstroModeRepo;
 import com.cosmos.common.exception.CustomException;
 import com.cosmos.credit.entity.Credit;
 import com.cosmos.credit.repo.CreditRepo;
 import com.cosmos.login.dto.CurrentlyLoggedInUser;
+import com.cosmos.login.entity.Role;
 import com.cosmos.moderator.dto.ModeratorDto;
 import com.cosmos.moderator.service.ModeratorService;
 import com.cosmos.notification.model.Notification;
@@ -26,10 +29,13 @@ import com.cosmos.user.service.UserServiceImpl;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.xml.bind.annotation.W3CDomHandler;
+import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -53,6 +59,9 @@ public class EnglishQuestionPoolService {
 
     @Autowired
     CreditRepo creditRepo;
+
+    @Autowired
+    private AstroModeRepo astroModeRepo;
 
 
     public EnglishQuestionPool findQuestionById(Long id) {
@@ -129,15 +138,26 @@ public class EnglishQuestionPoolService {
 
 
     public void markUnclearQuestion(EnglishUnclearQuestionDto englishUnclearQuestionDto) {
-        ModeratorDto moderatorDetails = moderatorService.findModeratorById(englishUnclearQuestionDto.getAssignedModId());
+        String role = getRole();
+        String fullname = null;
+        String profile = null;
+        if(Role.ROLE_MODERATOR.toString().equals(role)){
+            ModeratorDto moderatorDetails = moderatorService.findModeratorById(getCurrentUserId());
+            fullname = moderatorDetails.getFirstName() + " " + moderatorDetails.getLastName();
+            profile = moderatorDetails.getProfileImageUrl();
+        }else {
+            AstroModeEntity astroModeEntity = astroModeRepo.findByUserId(getCurrentUserId());
+            fullname = astroModeEntity.getFirstName() + " " + astroModeEntity.getLastName();
+            profile = astroModeEntity.getProfileImageUrl();
+        }
 
         NotificationDataPayload notificationForUnclearQuestion = new NotificationDataPayload();
         notificationForUnclearQuestion.setEngQuestionId(englishUnclearQuestionDto.getEngQuestionId().toString());
         notificationForUnclearQuestion.setStatus("UNCLEAR");
         notificationForUnclearQuestion.setMessage(englishUnclearQuestionDto.getDescription());
 
-        notificationForUnclearQuestion.setRepliedBy(moderatorDetails.getFirstName() + " " + moderatorDetails.getLastName());
-        notificationForUnclearQuestion.setProfileImgUrl(moderatorDetails.getProfileImageUrl());
+        notificationForUnclearQuestion.setRepliedBy(fullname);
+        notificationForUnclearQuestion.setProfileImgUrl(profile);
 
         Notification notification = new Notification("Your recent question is vague. Please ask another question.", "Unclear Question", "FLUTTER_NOTIFICATION_CLICK");
 
@@ -182,4 +202,17 @@ public class EnglishQuestionPoolService {
 //        EnglishUnclearQuestion savedEnglishUnclearQuestion = unclearQuestionRepo.save(englishUnclearQuestion);
 //        return savedEnglishUnclearQuestion;
     }
+
+    private String getRole() {
+        CurrentlyLoggedInUser currentlyLoggedInUser = (CurrentlyLoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Collection<GrantedAuthority> simpleGrantedAuthorities =  currentlyLoggedInUser.getAuthorities();
+        return simpleGrantedAuthorities.iterator().next().getAuthority();
+    }
+
+
+    private Long getCurrentUserId() {
+        CurrentlyLoggedInUser currentlyLoggedInUser = (CurrentlyLoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return currentlyLoggedInUser.getCurrentlyLoggedInUserId();
+    }
+
 }
