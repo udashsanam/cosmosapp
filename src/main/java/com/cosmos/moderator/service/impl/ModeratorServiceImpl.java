@@ -138,6 +138,17 @@ public class ModeratorServiceImpl implements ModeratorService {
             return questionAnswerPoolForModerator;
         }
 
+        NepaliAnswerPool unclearNepali = nepaliAnswerPoolRepo.selectModeratorUnfinishedUnclearAnswer(currentlyLoggedInUser.getCurrentlyLoggedInUserId());
+        if(unclearNepali != null){
+            currentJobForModerator.setCurrentJobType("unclear-answer");
+            currentJobForModerator.setNepaliAnswer(unclearNepali);
+
+            questionAnswerPoolForModerator.setCurrentJob(currentJobForModerator);
+            questionAnswerPoolForModerator.setUserDetails(userService.findUserDetailsById(unclearNepali.getUserId()));
+            questionAnswerPoolForModerator.setQuestionAnswerHistoryList(userService.findPrevQuestionHistoryOfUser(unclearNepali.getUserId()));
+            return questionAnswerPoolForModerator;
+        }
+
         EnglishQuestionPool englishQuestionPool = englishQuestionPoolRepo.selectModeratorUnfinishedQuestion(currentlyLoggedInUser.getCurrentlyLoggedInUserId());
         if(englishQuestionPool != null){
             currentJobForModerator.setCurrentJobType("english-question");
@@ -148,6 +159,8 @@ public class ModeratorServiceImpl implements ModeratorService {
             questionAnswerPoolForModerator.setQuestionAnswerHistoryList(userService.findPrevQuestionHistoryOfUser(englishQuestionPool.getUserId()));
             return questionAnswerPoolForModerator;
         }
+
+
 
         return null;
     }

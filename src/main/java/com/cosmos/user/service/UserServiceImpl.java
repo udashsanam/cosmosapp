@@ -210,7 +210,7 @@ public class UserServiceImpl {
 
             questionAnswerHistory.setCreatedAt(prevEngQuestion.getCreatedAt());
 
-            if (prevEngQuestion.getQuestionStatus().equalsIgnoreCase("2")) {
+            if (prevEngQuestion.getQuestionStatus().equalsIgnoreCase("2") || prevEngQuestion.getQuestionStatus().equalsIgnoreCase("3")) {
                 AstrologerReplyProjection nepaliAnswer = null;
                 EnglishReplyProjection englishAnswer = null;
 

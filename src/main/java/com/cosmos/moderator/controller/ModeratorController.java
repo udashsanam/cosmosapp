@@ -84,6 +84,24 @@ public class ModeratorController {
             return questionAnswerPoolForModerator;
         }
 
+        //find if this is unassigned unclear astrologer reply
+        NepaliAnswerPool unclearNepaliAnswerPool = nepaliAnswerPoolRepo.getUnClearQA();
+        if(unclearNepaliAnswerPool !=null){
+            System.out.println("inside unclear answer pool != null");
+            CurrentlyLoggedInUser currentlyLoggedInUser = (CurrentlyLoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            nepaliAnswerPool.setStatus(QuestionStatus.Unclear);
+            nepaliAnswerPool.setModeratorId(currentlyLoggedInUser.getCurrentlyLoggedInUserId());
+            nepaliAnswerPoolRepo.save(unclearNepaliAnswerPool);
+
+            currentJobForModerator.setCurrentJobType("unclear-answer");
+            currentJobForModerator.setNepaliAnswer(unclearNepaliAnswerPool);
+
+            questionAnswerPoolForModerator.setCurrentJob(currentJobForModerator);
+            questionAnswerPoolForModerator.setUserDetails(userService.findUserDetailsById(unclearNepaliAnswerPool.getUserId()));
+            questionAnswerPoolForModerator.setQuestionAnswerHistoryList(userService.findPrevQuestionHistoryOfUser(unclearNepaliAnswerPool.getUserId()));
+            return questionAnswerPoolForModerator;
+        }
+
         // Otherwise find unassigned question and return to moderator and mark this question dirty
         EnglishQuestionPool englishQuestionPool = englishQuestionPoolService.findTopUnAssignedQuestionFromPool();
         englishQuestionPoolService.markQuestionDirty(englishQuestionPool);

@@ -192,6 +192,25 @@ public class AstroModeServiceImpl implements IAstroModeService {
             return questionAnswerPoolForModerator;
         }
 
+        // find if there is unassigned unclear  astrologer reply
+        NepaliAnswerPool unclearNeplaiAnswer = nepaliAnswerPoolRepo.getUnClearQA();
+        if (nepaliAnswerPool != null) {
+            // todo: assigme to new user type astro moderator
+            System.out.println("inside unclear  nepali answer pool != null");
+            CurrentlyLoggedInUser currentlyLoggedInUser = (CurrentlyLoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            unclearNeplaiAnswer.setStatus(QuestionStatus.Unclear);
+            unclearNeplaiAnswer.setAstroModeId(currentlyLoggedInUser.getCurrentlyLoggedInUserId());
+            nepaliAnswerPoolRepo.save(nepaliAnswerPool);
+
+            currentJobForModerator.setCurrentJobType("unclear-answer");
+            currentJobForModerator.setNepaliAnswer(unclearNeplaiAnswer);
+
+            questionAnswerPoolForModerator.setCurrentJob(currentJobForModerator);
+            questionAnswerPoolForModerator.setUserDetails(userService.findUserDetailsById(nepaliAnswerPool.getUserId()));
+            questionAnswerPoolForModerator.setQuestionAnswerHistoryList(userService.findPrevQuestionHistoryOfUser(nepaliAnswerPool.getUserId()));
+            return questionAnswerPoolForModerator;
+        }
+
         // Otherwise find unassigned question and return to moderator and mark this question dirty
         EnglishQuestionPool englishQuestionPool = englishQuestionPoolService.findTopUnAssignedQuestionFromPool();
         englishQuestionPoolService.assignToAstroModerator(englishQuestionPool);
@@ -220,6 +239,18 @@ public class AstroModeServiceImpl implements IAstroModeService {
         if(nepaliAnswerPool != null){
             currentJobForModerator.setCurrentJobType("nepali-answer");
             currentJobForModerator.setNepaliAnswer(nepaliAnswerPool);
+
+            questionAnswerPoolForModerator.setCurrentJob(currentJobForModerator);
+            questionAnswerPoolForModerator.setUserDetails(userService.findUserDetailsById(nepaliAnswerPool.getUserId()));
+            questionAnswerPoolForModerator.setQuestionAnswerHistoryList(userService.findPrevQuestionHistoryOfUser(nepaliAnswerPool.getUserId()));
+            return questionAnswerPoolForModerator;
+        }
+
+        //find unfinished answer
+        NepaliAnswerPool unclearNepali = nepaliAnswerPoolRepo.selectAstoModeratorUnfinishedUnclearAnswer(currentlyLoggedInUser.getCurrentlyLoggedInUserId());
+        if(nepaliAnswerPool != null){
+            currentJobForModerator.setCurrentJobType("unclear-answer");
+            currentJobForModerator.setNepaliAnswer(unclearNepali);
 
             questionAnswerPoolForModerator.setCurrentJob(currentJobForModerator);
             questionAnswerPoolForModerator.setUserDetails(userService.findUserDetailsById(nepaliAnswerPool.getUserId()));

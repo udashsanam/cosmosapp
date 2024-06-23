@@ -33,4 +33,13 @@ public interface NepaliAnswerPoolRepo extends JpaRepository<NepaliAnswerPool, Lo
 
     @Query(value = "SELECT * FROM tbl_answers_from_astrologer nr WHERE nr.fk_astro_mod_id=?1 AND nr.ques_sts=0 LIMIT 0,1", nativeQuery = true)
     NepaliAnswerPool selectAstoModeratorUnfinishedAnswer(Long modId);
+
+    @Query(value = "SELECT * FROM tbl_answers_from_astrologer WHERE ques_sts=3 ORDER BY created_at ASC LIMIT 0,1", nativeQuery = true)
+    NepaliAnswerPool getUnClearQA();
+
+    @Query(value = "SELECT * FROM tbl_answers_from_astrologer nr WHERE nr.fk_mod_id=?1 AND nr.ques_sts=3 LIMIT 0,1", nativeQuery = true)
+    NepaliAnswerPool selectModeratorUnfinishedUnclearAnswer(Long currentlyLoggedInUserId);
+
+    @Query(value = "SELECT * FROM tbl_answers_from_astrologer nr WHERE nr.fk_astro_mod_id=?1 AND nr.ques_sts=3 LIMIT 0,1", nativeQuery = true)
+    NepaliAnswerPool selectAstoModeratorUnfinishedUnclearAnswer(Long modId);
 }
