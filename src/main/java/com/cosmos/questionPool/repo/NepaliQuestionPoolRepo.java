@@ -19,12 +19,13 @@ public interface NepaliQuestionPoolRepo extends JpaRepository<NepaliQuestionPool
     List<NepaliQuestionPool> findAllByUserId(Long userId);
 
     @Query(value = "SELECT nepQ.nep_ques_id AS nepQuestionId, nepQ.nep_question as translatedQuestion, " +
-            "nepQ.created_at AS translatedOn, CONCAT(users.first_name,' ',users.last_name) as translatedBy " +
+            "nepQ.created_at AS translatedOn, CONCAT(users.first_name,' ',users.last_name) as translatedBy, " +
+            "case when engQ.fk_astro_mod_id is not null then 'astromod' else null end as role " +
             "FROM tbl_nep_ques_pool nepQ " +
             "INNER JOIN tbl_eng_ques_pool engQ " +
             "ON nepQ.fk_eng_qsn_id = engQ.eng_ques_id " +
             "INNER JOIN tbl_users users " +
-            "ON users.user_id = engQ.fk_mod_id " +
+            "ON users.user_id = engQ.fk_mod_id or  users.user_id = engQ.fk_astro_mod_id " +
             "WHERE nepQ.fk_eng_qsn_id = ?1", nativeQuery = true)
     NepaliQuestionProjection selectTranslatedEngQuestionByEngQuestionId(Long id);
 

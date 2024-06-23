@@ -75,7 +75,7 @@ public class AstroModeController {
     }
 
 
-    @PostMapping(value = "/ua-astrologerReply/post", consumes = "application/json", produces = "application/json")
+    @PostMapping(value = "/ua-astromode/post", consumes = "application/json", produces = "application/json")
     @ResponseBody
     public EnglishAnswerPool convertNepReplyToEng(@RequestBody AstrologerReplyToEng astroRep) {
         if (astroRep.getTranslatedAns() == null || astroRep.getTranslatedAns().equals("")) {

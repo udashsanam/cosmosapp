@@ -21,7 +21,8 @@ public interface EnglishAnswerPoolRepo extends JpaRepository<EnglishAnswerPool, 
     EnglishAnswerPool getOneByQuestionId(Long engQsnId);
 
     @Query(value = "SELECT engR.answer as engReply, " +
-            "engR.created_at AS translatedOn, CONCAT(users.first_name,' ',users.last_name) as translatedBy " +
+            "engR.created_at AS translatedOn, CONCAT(users.first_name,' ',users.last_name) as translatedBy, " +
+            "case when nepR.fk_astro_mod_id is not null then 'astromod' end as role " +
             "FROM tbl_final_question_answer engR " +
             "INNER JOIN tbl_answers_from_astrologer nepR " +
             "ON nepR.id = engR.fk_nep_ans_id " +

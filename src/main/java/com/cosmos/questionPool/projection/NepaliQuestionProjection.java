@@ -5,4 +5,5 @@ public interface NepaliQuestionProjection {
     String getTranslatedQuestion();
     String getTranslatedBy();
     String getTranslatedOn();
+    String getRole();
 }
