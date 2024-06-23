@@ -2,12 +2,14 @@ package com.cosmos.questionPool.controller;
 
 import com.cosmos.credit.entity.Credit;
 import com.cosmos.credit.service.CreditServiceImpl;
+import com.cosmos.login.dto.CurrentlyLoggedInUser;
 import com.cosmos.questionPool.dto.EnglishUnclearQuestionDto;
 import com.cosmos.questionPool.entity.EnglishUnclearQuestion;
 import com.cosmos.questionPool.service.EnglishQuestionPoolService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -28,10 +30,16 @@ public class EnglishQuestionPoolController {
     @PostMapping(value = "/mark-unclear", consumes = "application/json", produces = "application/json")
     public ResponseEntity<HttpStatus> processUnclearQuestion(@RequestBody EnglishUnclearQuestionDto unclearQuestion) {
         Credit credit = new Credit();
-        credit.setUserId(unclearQuestion.getAssignedModId());
+        credit.setUserId(getCurrentUserId());
         credit.setEndUserId(unclearQuestion.getUserId());
         creditService.grantCreditToEndUser(credit);
         englishQuestionPoolService.markUnclearQuestion(unclearQuestion);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    private Long getCurrentUserId() {
+        CurrentlyLoggedInUser currentlyLoggedInUser = (CurrentlyLoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return currentlyLoggedInUser.getCurrentlyLoggedInUserId();
+    }
+
 }
