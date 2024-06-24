@@ -254,6 +254,8 @@ public class EnglishQuestionPoolService {
         answerPool.setNepToEngRepAstroMod(getCurrentUserId());
         answerPool.setEngToNepQsnMod(englishQuestionPool.getAssignedModId());
         answerPool.setNepToEngRepMod(getCurrentUserId());
+        // unclear diclear astrologer
+        answerPool.setAstroId(nepaliQuestionPool.getAssignedAstroId());
 
 
         answerPool.setQuestionStatus("UNCLEAR");
