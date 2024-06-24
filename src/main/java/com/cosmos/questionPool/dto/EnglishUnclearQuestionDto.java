@@ -10,4 +10,8 @@ public class EnglishUnclearQuestionDto {
     private String description;
     private Long assignedModId;
     private Long userId;
+    // for unclear by mode and astro mode pre unclear by astrologer
+    private Long nepQuestionId;
+
+    private Long nepAnswerId;
 }

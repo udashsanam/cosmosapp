@@ -27,6 +27,7 @@ public class EnglishQuestionPoolController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    // directly mark unclear from astrologer or moderator side
     @PostMapping(value = "/mark-unclear", consumes = "application/json", produces = "application/json")
     public ResponseEntity<HttpStatus> processUnclearQuestion(@RequestBody EnglishUnclearQuestionDto unclearQuestion) {
         Credit credit = new Credit();
@@ -41,5 +42,18 @@ public class EnglishQuestionPoolController {
         CurrentlyLoggedInUser currentlyLoggedInUser = (CurrentlyLoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return currentlyLoggedInUser.getCurrentlyLoggedInUserId();
     }
+
+    // directly mark unclear after  astrologer mark unclear
+    @PostMapping(value = "/mark-unclear-converted", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<HttpStatus> proceesUnclearAfterAstrologer(@RequestBody EnglishUnclearQuestionDto unclearQuestion) {
+        Credit credit = new Credit();
+        credit.setUserId(getCurrentUserId());
+        credit.setEndUserId(unclearQuestion.getUserId());
+        creditService.grantCreditToEndUser(credit);
+        englishQuestionPoolService.markUnclearQuestionAfterAstrologer(unclearQuestion);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
 
 }

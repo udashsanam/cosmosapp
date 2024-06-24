@@ -80,6 +80,7 @@ public class NepaliQuestionPoolController {
         }
     }
 
+    // mark unclear by the astrologer for nepali question
     @PostMapping(value = "/mark-unclear", consumes = "application/json", produces = "application/json")
     public ResponseEntity<HttpStatus> processUnclearQuestion(@RequestBody NepaliUnclearQuestionDto unclearQuestion) {
         if (unclearQuestion.getDescription().equalsIgnoreCase("") || unclearQuestion.getDescription() == null) {

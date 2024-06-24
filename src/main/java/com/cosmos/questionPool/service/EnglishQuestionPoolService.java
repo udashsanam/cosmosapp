@@ -1,11 +1,11 @@
 package com.cosmos.questionPool.service;
 
-import com.cosmos.admin.entity.Message;
 import com.cosmos.admin.repo.MessageRepo;
+import com.cosmos.astrologer.entity.NepaliAnswerPool;
+import com.cosmos.astrologer.repo.NepaliAnswerPoolRepo;
 import com.cosmos.astromode.enitity.AstroModeEntity;
 import com.cosmos.astromode.repo.AstroModeRepo;
 import com.cosmos.common.exception.CustomException;
-import com.cosmos.credit.entity.Credit;
 import com.cosmos.credit.repo.CreditRepo;
 import com.cosmos.login.dto.CurrentlyLoggedInUser;
 import com.cosmos.login.entity.Role;
@@ -17,12 +17,10 @@ import com.cosmos.notification.model.NotificationResponse;
 import com.cosmos.notification.service.NotificationService;
 import com.cosmos.questionPool.dto.EnglishQuestionDto;
 import com.cosmos.questionPool.dto.EnglishUnclearQuestionDto;
-import com.cosmos.questionPool.entity.EnglishAnswerPool;
-import com.cosmos.questionPool.entity.EnglishQuestionPool;
-import com.cosmos.questionPool.entity.EnglishUnclearQuestion;
-import com.cosmos.questionPool.entity.QuestionStatus;
+import com.cosmos.questionPool.entity.*;
 import com.cosmos.questionPool.repo.EnglishAnswerPoolRepo;
 import com.cosmos.questionPool.repo.EnglishQuestionPoolRepo;
+import com.cosmos.questionPool.repo.NepaliQuestionPoolRepo;
 import com.cosmos.questionPool.repo.UnclearQuestionRepo;
 import com.cosmos.user.dto.UserDto;
 import com.cosmos.user.service.UserServiceImpl;
@@ -30,15 +28,15 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import javax.xml.bind.annotation.W3CDomHandler;
+import javax.transaction.Transactional;
 import java.util.Collection;
 import java.util.List;
 
 @Service
+@Transactional
 public class EnglishQuestionPoolService {
     @Autowired
     private EnglishQuestionPoolRepo englishQuestionPoolRepo;
@@ -62,6 +60,12 @@ public class EnglishQuestionPoolService {
 
     @Autowired
     private AstroModeRepo astroModeRepo;
+
+    @Autowired
+    private NepaliQuestionPoolRepo nepaliQuestionPoolRepo;
+
+    @Autowired
+    private NepaliAnswerPoolRepo nepaliAnswerPoolRepo;
 
 
     public EnglishQuestionPool findQuestionById(Long id) {
@@ -215,4 +219,82 @@ public class EnglishQuestionPoolService {
         return currentlyLoggedInUser.getCurrentlyLoggedInUserId();
     }
 
+    public void markUnclearQuestionAfterAstrologer(EnglishUnclearQuestionDto englishUnclearQuestionDto) {
+        String role = getRole();
+        String fullname = null;
+        String profile = null;
+        if(Role.ROLE_MODERATOR.toString().equals(role)){
+            ModeratorDto moderatorDetails = moderatorService.findModeratorById(getCurrentUserId());
+            fullname = moderatorDetails.getFirstName() + " " + moderatorDetails.getLastName();
+            profile = moderatorDetails.getProfileImageUrl();
+        }else {
+            AstroModeEntity astroModeEntity = astroModeRepo.findByUserId(getCurrentUserId());
+            fullname = astroModeEntity.getFirstName() + " " + astroModeEntity.getLastName();
+            profile = astroModeEntity.getProfileImageUrl();
+        }
+
+
+
+        NepaliQuestionPool nepaliQuestionPool  = nepaliQuestionPoolRepo.findById(englishUnclearQuestionDto.getNepQuestionId())
+                .orElseThrow(()-> new CustomException("Neplai question not found", HttpStatus.NOT_FOUND));
+
+        EnglishQuestionPool englishQuestionPool = englishQuestionPoolRepo.getOne(nepaliQuestionPool.getEngQsnId());
+
+        NepaliAnswerPool nepaliAnswerPool = nepaliAnswerPoolRepo.findById(englishUnclearQuestionDto.getNepAnswerId())
+                .orElseThrow( ()-> new CustomException("Neplai answer not found" , HttpStatus.NOT_FOUND));
+
+        EnglishAnswerPool answerPool = new EnglishAnswerPool();
+        answerPool.setAnswer(englishUnclearQuestionDto.getDescription());
+        answerPool.setQuestionId(nepaliQuestionPool.getEngQsnId());
+        answerPool.setUserId(englishUnclearQuestionDto.getUserId());
+        answerPool.setAnswerId(englishUnclearQuestionDto.getNepAnswerId());
+
+
+        answerPool.setEngToNepQsnAstroMod(englishQuestionPool.getAssignedAstroModId());
+        answerPool.setNepToEngRepAstroMod(getCurrentUserId());
+        answerPool.setEngToNepQsnMod(englishQuestionPool.getAssignedModId());
+        answerPool.setNepToEngRepMod(getCurrentUserId());
+
+
+        answerPool.setQuestionStatus("UNCLEAR");
+
+        UserDto user = userService.findUserDetailsById(englishUnclearQuestionDto.getUserId());
+
+        if (user.getDeviceToken() == null) {
+            throw new CustomException("Cannot Send notification. Device Token is null", HttpStatus.SERVICE_UNAVAILABLE);
+        }
+
+        NotificationDataPayload notificationForUnclearQuestion = new NotificationDataPayload();
+        notificationForUnclearQuestion.setEngQuestionId(englishQuestionPool.getEngQuesId().toString());
+        notificationForUnclearQuestion.setStatus("UNCLEAR");
+        notificationForUnclearQuestion.setMessage(englishUnclearQuestionDto.getDescription());
+
+        notificationForUnclearQuestion.setRepliedBy(fullname);
+        notificationForUnclearQuestion.setProfileImgUrl(profile);
+
+        Notification notification = new Notification("Your recent question is vague. Please ask another question.", "Unclear Question", "FLUTTER_NOTIFICATION_CLICK");
+
+        NotificationResponse notificationResponse = notificationService.sendPushNotification(user.getDeviceToken(), notification, notificationForUnclearQuestion);
+
+        answerPool.setMessageId(notificationResponse.getMessageId());
+        answerPool.setSentStatus(notificationResponse.isSuccess());
+        answerPool.setFailureMsg(notificationResponse.getFailureMsg());
+
+
+        // marking this english question Unclear
+        englishQuestionPool.setQuestionStatus(QuestionStatus.Unclear);
+        englishQuestionPoolRepo.save(englishQuestionPool);
+
+        answerPool.setQuestion(englishQuestionPool.getEngQuestion());
+        englishAnswerPoolRepo.save(answerPool);
+
+        // marking nepali question  unclear
+        nepaliQuestionPool.setMarkQuestionUnclear(true);
+        nepaliQuestionPoolRepo.save(nepaliQuestionPool);
+
+        // making nepali answer clear
+        nepaliAnswerPool.setStatus(QuestionStatus.Clear);
+        nepaliAnswerPoolRepo.save(nepaliAnswerPool);
+
+    }
 }

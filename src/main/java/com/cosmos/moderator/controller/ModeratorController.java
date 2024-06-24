@@ -89,8 +89,8 @@ public class ModeratorController {
         if(unclearNepaliAnswerPool !=null){
             System.out.println("inside unclear answer pool != null");
             CurrentlyLoggedInUser currentlyLoggedInUser = (CurrentlyLoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            nepaliAnswerPool.setStatus(QuestionStatus.Unclear);
-            nepaliAnswerPool.setModeratorId(currentlyLoggedInUser.getCurrentlyLoggedInUserId());
+            unclearNepaliAnswerPool.setStatus(QuestionStatus.Unclear);
+            unclearNepaliAnswerPool.setModeratorId(currentlyLoggedInUser.getCurrentlyLoggedInUserId());
             nepaliAnswerPoolRepo.save(unclearNepaliAnswerPool);
 
             currentJobForModerator.setCurrentJobType("unclear-answer");
