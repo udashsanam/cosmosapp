@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/admin/manage/astromode")
 public class AstroModeManagerController {
@@ -38,5 +40,10 @@ public class AstroModeManagerController {
     public ResponseEntity<?> delete(@PathVariable Long id){
         iAstroModeService.deleteModeratorById(id);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/all")
+    public List<AstroModeDto> fetchAll(){
+        return iAstroModeService.findAll();
     }
 }

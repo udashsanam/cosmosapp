@@ -8,6 +8,8 @@ import com.cosmos.questionPool.entity.EnglishAnswerPool;
 import com.cosmos.user.dto.UserDto;
 import com.cosmos.user.entity.User;
 
+import java.util.List;
+
 public interface IAstroModeService {
 
     AstroModeDto saveAstroMode(AstroModeDto astroModeDto);
@@ -25,4 +27,6 @@ public interface IAstroModeService {
     QuestionAnswerPoolForModerator findAstroModeratorUnfinishedTask();
 
     EnglishAnswerPool storeTranslatedReply(AstrologerReplyToEng astroRep, Long id);
+
+    List<AstroModeDto> findAll();
 }
