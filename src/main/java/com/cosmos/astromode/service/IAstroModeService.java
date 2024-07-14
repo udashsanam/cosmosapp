@@ -28,5 +28,5 @@ public interface IAstroModeService {
 
     EnglishAnswerPool storeTranslatedReply(AstrologerReplyToEng astroRep, Long id);
 
-    List<AstroModeDto> findAllAstroModes();
+    List<AstroModeDto> findAll();
 }

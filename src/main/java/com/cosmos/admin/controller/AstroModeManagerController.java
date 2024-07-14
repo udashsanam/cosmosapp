@@ -42,9 +42,8 @@ public class AstroModeManagerController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping(value = "/all", produces = "application/json")
-    public List<AstroModeDto> getAllAstroModes() {
-        return iAstroModeService.findAllAstroModes();
+    @GetMapping(value = "/all")
+    public List<AstroModeDto> fetchAll(){
+        return iAstroModeService.findAll();
     }
-
 }

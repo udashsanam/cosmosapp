@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name = "tbl_user_change_log")
@@ -25,6 +26,9 @@ public class UserChangeLog {
 
     @Column(name = "birth_date")
     private String dateOfBirth;
+
+    @Column(name = "created_date")
+    private Date createdDate;
 
     @Column(name = "birth_time")
     private String birthTime;

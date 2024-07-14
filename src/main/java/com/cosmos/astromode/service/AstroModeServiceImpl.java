@@ -316,8 +316,11 @@ public class AstroModeServiceImpl implements IAstroModeService {
     }
 
     @Override
-    public List<AstroModeDto> findAllAstroModes() {
-        return astroModeRepo.findAll().stream().map(astroModeEntity ->
-                modelMapper.map(astroModeEntity, AstroModeDto.class)).collect(Collectors.toList());
+    public List<AstroModeDto> findAll() {
+        return astroModeRepo.findAll().stream()
+                .map(astroModeEntity ->{
+                    return modelMapper.map(astroModeEntity, AstroModeDto.class);
+                })
+                .collect(Collectors.toList());
     }
 }
