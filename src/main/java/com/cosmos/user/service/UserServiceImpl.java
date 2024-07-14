@@ -46,6 +46,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -171,6 +172,7 @@ public class UserServiceImpl {
         user.setCountryIso(userDto.getCountryIso());
         user.setState(userDto.getState());
         user.setCity(userDto.getCity());
+        user.setCreatedDate(new Date());
         user.setDeviceToken(userDto.getDeviceToken());
     }
 
