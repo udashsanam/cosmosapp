@@ -244,9 +244,9 @@ public class UserServiceImpl {
                 // set detail change history
 
                 UserChangeLog userChangeLog = userChangeLogRepo.findById(prevEngQuestion.getEngQuestionId()).orElse(null);
-                String message = String.format("User %s %s has change date of birth from %s to %s birth time from %s to %s and accurate time from %s to %s",
-                        userChangeLog.getFirstName(), userChangeLog.getLastName(), userChangeLog.getPreDateOfBirth(), userChangeLog.getDateOfBirth(),
-                        userChangeLog.getPreBirthTime(), userChangeLog.getBirthTime(), userChangeLog.getPreAccurateTime(), userChangeLog.getAccurateTime());
+                String message = String.format("User has changed date of birth  detail from %s time %s to %s time %s ",
+                        userChangeLog.getPreDateOfBirth(),
+                        userChangeLog.getPreBirthTime(), userChangeLog.getDateOfBirth() , userChangeLog.getBirthTime());
                 questionAnswerHistory.setEngQuestion(message);
                 if(userChangeLog.getPreBirthTime() == null) questionAnswerHistory = null;
             }
