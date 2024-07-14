@@ -1,6 +1,7 @@
 package com.cosmos.user.entity;
 
 
+import com.cosmos.common.model.AuditModel;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,7 +17,7 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserChangeLog {
+public class UserChangeLog extends AuditModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -27,14 +28,21 @@ public class UserChangeLog {
     @Column(name = "birth_date")
     private String dateOfBirth;
 
-    @Column(name = "created_date")
-    private Date createdDate;
+    @Column(name = "pre_birth_date")
+    private String preDateOfBirth;
+
 
     @Column(name = "birth_time")
     private String birthTime;
 
+    @Column(name = "pre_birth_time")
+    private String preBirthTime;
+
     @Column(name = "is_accurate_time", columnDefinition = "tinyint(1)")
     private Boolean accurateTime;
+
+    @Column(name = "pre_is_accurate_time", columnDefinition = "tinyint(1)")
+    private Boolean preAccurateTime;
 
     @Column(name = "subscription", columnDefinition = "tinyint(1) default false")
     private boolean subscription;

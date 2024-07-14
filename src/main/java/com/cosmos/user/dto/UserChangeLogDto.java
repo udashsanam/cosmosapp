@@ -50,4 +50,7 @@ public class UserChangeLogDto {
 
     private String deviceToken;
 
+    private Date createdAt;
+
+
 }

@@ -21,12 +21,25 @@ public interface EnglishQuestionPoolRepo extends JpaRepository<EnglishQuestionPo
     @Query(value = "SELECT * FROM tbl_eng_ques_pool eq WHERE eq.fk_mod_id=?1 AND ques_sts=0 LIMIT 0,1", nativeQuery = true)
     EnglishQuestionPool selectModeratorUnfinishedQuestion(Long moderatorId);
 
-    @Query(value = "SELECT eng_ques_id AS engQuestionId, eng_question AS engQuestion, ques_sts AS questionStatus, created_at AS createdAt FROM " +
-            "tbl_eng_ques_pool eq " +
-            "WHERE eq.fk_user_id = ?1 " +
-            "AND " +
-            "eq.ques_sts != 1 ORDER BY eq.created_at",
-            nativeQuery = true)
+//    @Query(value = "SELECT eng_ques_id AS engQuestionId, eng_question AS engQuestion, ques_sts AS questionStatus, created_at AS createdAt FROM " +
+//            "tbl_eng_ques_pool eq " +
+//            "WHERE eq.fk_user_id = ?1 " +
+//            "AND " +
+//            "eq.ques_sts != 1 ORDER BY eq.created_at",
+//            nativeQuery = true)
+//    List<EnglishQuestionProjection> selectPrevEngQuestionOfUser(Long userId);
+
+    @Query(value = "select * from (SELECT eng_ques_id AS engQuestionId, eng_question AS engQuestion, ques_sts AS questionStatus, created_at AS createdAt FROM\n" +
+            "            tbl_eng_ques_pool eq\n" +
+            "            WHERE eq.fk_user_id = ?1 \n" +
+            "            AND\n" +
+            "            eq.ques_sts != 1 \n" +
+            "union all\n" +
+            "select tbl_user_change_log.id as engQuestionId,\n" +
+            "       tbl_user_change_log.first_name as engQuestion,\n" +
+            "        '4' as questionStatus,\n" +
+            "        tbl_user_change_log.created_at as createdAt\n" +
+            "       from tbl_user_change_log where tbl_user_change_log.user_id = ?1 ) as t order by t.createdAt ", nativeQuery = true)
     List<EnglishQuestionProjection> selectPrevEngQuestionOfUser(Long userId);
 
     @Query(value = "SELECT count(eng_ques_id) as dailyQuestionCount FROM tbl_eng_ques_pool WHERE DATE(created_at) = CURDATE()",

@@ -110,6 +110,7 @@ public class UserServiceImpl {
     }
 
     public UserDto processUserRegistration(UserDto userDto) {
+        UserChangeLog userChangeLog = new UserChangeLog();
         User user = userRepository.findByDeviceId(userDto.getDeviceId());
         if (userDto.getUserId() == 0 && user == null) {
             user = modelMapper.map(userDto, User.class);
@@ -117,10 +118,16 @@ public class UserServiceImpl {
             user.setEnabled(true);
             user.setFirstLogin(true);
             user.setAccountNonLocked(true);
+            userChangeLog.setPreAccurateTime(null);
+            userChangeLog.setPreBirthTime(null);
+            userChangeLog.setPreDateOfBirth(null);
         } else {
 //            user = userRepository.findByUserId(user.getUserId());
 //            if (user == null)
 //                throw new CustomException("No user found under this ID!", HttpStatus.NOT_FOUND);
+            userChangeLog.setPreDateOfBirth(user.getDateOfBirth());
+            userChangeLog.setPreAccurateTime(user.getAccurateTime());
+            userChangeLog.setPreBirthTime(user.getBirthTime());
 
             user.setFirstName(userDto.getFirstName());
             user.setLastName(userDto.getLastName());
@@ -136,10 +143,7 @@ public class UserServiceImpl {
             user.setProfileImageUrl(userDto.getProfileImageUrl());
             user.setDeviceToken(userDto.getDeviceToken());
             user.setFirstLogin(false);
-            UserChangeLog userChangeLog = new UserChangeLog();
-            copyUserChangeLog(userChangeLog, userDto);
-            userChangeLog.setUser(user);
-            userChangeLogRepo.save(userChangeLog);
+
         }
 
         User newUser = userRepository.save(user);
@@ -149,6 +153,10 @@ public class UserServiceImpl {
             credit.setEndUserId(newUser.getUserId());
             creditService.grantCreditToEndUser(credit);
         }
+
+        copyUserChangeLog(userChangeLog, userDto);
+        userChangeLog.setUser(newUser);
+        userChangeLogRepo.save(userChangeLog);
         return modelMapper.map(newUser, UserDto.class);
     }
 
@@ -172,7 +180,6 @@ public class UserServiceImpl {
         user.setCountryIso(userDto.getCountryIso());
         user.setState(userDto.getState());
         user.setCity(userDto.getCity());
-        user.setCreatedDate(new Date());
         user.setDeviceToken(userDto.getDeviceToken());
     }
 
@@ -206,7 +213,8 @@ public class UserServiceImpl {
 
             else if (prevEngQuestion.getQuestionStatus().equals("2"))
                 questionAnswerHistory.setStatus("Clear");
-
+            else if(prevEngQuestion.getQuestionStatus().equals("4"))
+                questionAnswerHistory.setStatus("Detail_Changed");
             else
                 questionAnswerHistory.setStatus("Unclear");
 
@@ -232,9 +240,18 @@ public class UserServiceImpl {
                 questionAnswerHistory.setTranslatedEngQuestion(translatedEngQuestion);
                 questionAnswerHistory.setNepaliAnswer(nepaliAnswer);
                 questionAnswerHistory.setEnglishAnswer(englishAnswer);
+            }else if (prevEngQuestion.getQuestionStatus().equalsIgnoreCase("4")){
+                // set detail change history
+
+                UserChangeLog userChangeLog = userChangeLogRepo.findById(prevEngQuestion.getEngQuestionId()).orElse(null);
+                String message = String.format("User %s %s has change date of birth from %s to %s birth time from %s to %s and accurate time from %s to %s",
+                        userChangeLog.getFirstName(), userChangeLog.getLastName(), userChangeLog.getPreDateOfBirth(), userChangeLog.getDateOfBirth(),
+                        userChangeLog.getPreBirthTime(), userChangeLog.getBirthTime(), userChangeLog.getPreAccurateTime(), userChangeLog.getAccurateTime());
+                questionAnswerHistory.setEngQuestion(message);
+                if(userChangeLog.getPreBirthTime() == null) questionAnswerHistory = null;
             }
 
-            userQuestionAnswerHistoryList.add(questionAnswerHistory);
+            if(questionAnswerHistory !=null) userQuestionAnswerHistoryList.add(questionAnswerHistory);
         }
         return userQuestionAnswerHistoryList;
     }
@@ -292,6 +309,7 @@ public class UserServiceImpl {
         user.setState(userDto.getState());
         user.setCity(userDto.getCity());
         user.setDeviceToken(userDto.getDeviceToken());
+        user.setCreatedAt(userDto.getCreatedAt());
     }
 
     public EnglishAnswerPool rateAnswer(RateDto rateDto) {
