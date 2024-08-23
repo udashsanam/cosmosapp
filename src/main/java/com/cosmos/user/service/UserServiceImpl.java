@@ -257,34 +257,36 @@ public class UserServiceImpl {
     }
 
     public NotificationResponse sendAnswerToUserViaNotification(Long userId, String answer, Long astroId, Long questionId) {
-        logger.info("Preparing to send notification to user...");
-        Astrologer astrologer = astrologerRepo.findById(astroId).orElse(null);
-        AstrologerDto astrologerDto = null;
-        AstroModeEntity astroModeEntity = astroModeRepo.findByUserId(astroId);
-         if (astrologer != null) {
-             astrologerDto =  modelMapper.map(astrologer, AstrologerDto.class);
-         }
 
-        NotificationDataPayload answerDataPayLoad = new NotificationDataPayload();
-        answerDataPayLoad.setEngQuestionId(questionId.toString());
-        answerDataPayLoad.setStatus("CLEAR");
-        answerDataPayLoad.setMessage(answer);
-        answerDataPayLoad.setRepliedBy(astrologer !=null? astrologer.getFirstName() + " " + astrologer.getLastName() : astroModeEntity.getFirstName() + " " + astroModeEntity.getLastName());
-        answerDataPayLoad.setProfileImgUrl(astrologer != null? astrologer.getProfileImageUrl() : astroModeEntity.getProfileImageUrl());
-
-        Notification notification = new Notification("Answer of your question", "Answer", "FLUTTER_NOTIFICATION_CLICK");
-
-        logger.info("Finding user detail to get device token...");
-        UserDto user = findUserDetailsById(userId);
-
-        // TODO make log
-        if (user.getDeviceToken() == null) {
-            logger.error("Cannot Send notification. Device Token is null...");
-//			throw new CustomException("Cannot Send notification. Device Token is null", HttpStatus.SERVICE_UNAVAILABLE);
-        }
-
-
-        return notificationService.sendPushNotification(user.getDeviceToken(), notification, answerDataPayLoad);
+        return  new NotificationResponse();
+//        logger.info("Preparing to send notification to user...");
+//        Astrologer astrologer = astrologerRepo.findById(astroId).orElse(null);
+//        AstrologerDto astrologerDto = null;
+//        AstroModeEntity astroModeEntity = astroModeRepo.findByUserId(astroId);
+//         if (astrologer != null) {
+//             astrologerDto =  modelMapper.map(astrologer, AstrologerDto.class);
+//         }
+//
+//        NotificationDataPayload answerDataPayLoad = new NotificationDataPayload();
+//        answerDataPayLoad.setEngQuestionId(questionId.toString());
+//        answerDataPayLoad.setStatus("CLEAR");
+//        answerDataPayLoad.setMessage(answer);
+//        answerDataPayLoad.setRepliedBy(astrologer !=null? astrologer.getFirstName() + " " + astrologer.getLastName() : astroModeEntity.getFirstName() + " " + astroModeEntity.getLastName());
+//        answerDataPayLoad.setProfileImgUrl(astrologer != null? astrologer.getProfileImageUrl() : astroModeEntity.getProfileImageUrl());
+//
+//        Notification notification = new Notification("Answer of your question", "Answer", "FLUTTER_NOTIFICATION_CLICK");
+//
+//        logger.info("Finding user detail to get device token...");
+//        UserDto user = findUserDetailsById(userId);
+//
+//        // TODO make log
+//        if (user.getDeviceToken() == null) {
+//            logger.error("Cannot Send notification. Device Token is null...");
+////			throw new CustomException("Cannot Send notification. Device Token is null", HttpStatus.SERVICE_UNAVAILABLE);
+//        }
+//
+//
+//        return notificationService.sendPushNotification(user.getDeviceToken(), notification, answerDataPayLoad);
     }
 
     public List<UserChangeLogDto> getAllChangeHistory(Long userId) {
