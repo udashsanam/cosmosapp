@@ -6,6 +6,7 @@ import com.cosmos.common.exception.CustomException;
 import com.cosmos.credit.entity.Credit;
 import com.cosmos.credit.service.CreditServiceImpl;
 import com.cosmos.login.dto.CurrentlyLoggedInUser;
+import com.cosmos.meta.service.MessengerService;
 import com.cosmos.moderator.dto.AstrologerReplyToEng;
 import com.cosmos.moderator.dto.CurrentJobForModerator;
 import com.cosmos.moderator.dto.QuestionAnswerPoolForModerator;
@@ -38,12 +39,14 @@ public class ModeratorController {
     private ModeratorService moderatorService;
     private UserServiceImpl userService;
     private CreditServiceImpl creditService;
+    private final MessengerService messengerService;
 
     @Autowired
     public ModeratorController(NepaliAnswerPoolRepo nepaliAnswerPoolRepo, NepaliQuestionPoolRepo nepQsnRepo,
                                EnglishQuestionPoolService englishQuestionPoolService,
                                EnglishAnswerPoolRepo finalRepo, ModeratorService moderatorService,
-                               UserServiceImpl userService, CreditServiceImpl creditService) {
+                               UserServiceImpl userService, CreditServiceImpl creditService,
+                               MessengerService messengerService) {
         this.nepaliAnswerPoolRepo = nepaliAnswerPoolRepo;
         this.nepQsnRepo = nepQsnRepo;
         this.englishQuestionPoolService = englishQuestionPoolService;
@@ -51,6 +54,7 @@ public class ModeratorController {
         this.moderatorService = moderatorService;
         this.userService = userService;
         this.creditService = creditService;
+        this.messengerService = messengerService;
     }
 
     @GetMapping(value = "/current-job", produces = "application/json")
@@ -134,6 +138,7 @@ public class ModeratorController {
                 reply.setModeratorId(getCurrentUserId());
                 reply.setStatus(QuestionStatus.Clear);
                 nepaliAnswerPoolRepo.save(reply);
+                messengerService.sendAnswerToUser(astroRep.getUserId(), astroRep.getTranslatedAns());
             }
             return storeTranslatedReply(astroRep, reply.getId());
         }

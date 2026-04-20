@@ -5,6 +5,8 @@ import com.cosmos.astrologer.repo.NepaliAnswerPoolRepo;
 import com.cosmos.common.exception.CustomException;
 import com.cosmos.credit.entity.Credit;
 import com.cosmos.login.dto.CurrentlyLoggedInUser;
+import com.cosmos.login.entity.AppUser;
+import com.cosmos.meta.service.MessengerService;
 import com.cosmos.questionPool.dto.EnglishUnclearQuestionDto;
 import com.cosmos.questionPool.dto.NepaliQuestionDto;
 import com.cosmos.questionPool.dto.NepaliUnclearQuestionDto;
@@ -29,13 +31,16 @@ public class NepaliQuestionPoolController {
     private final NepaliAnswerPoolRepo nepaliAnswerPoolRepo;
     private EnglishQuestionPoolRepo engQsnRepo;
     private NepaliQuestionPoolRepo nepQsnRepo;
+    private final MessengerService messengerService;
 
     @Autowired
-    public NepaliQuestionPoolController(EnglishQuestionPoolRepo engQsnRepo, NepaliQuestionPoolRepo nepQsnRepo, NepaliQuestionPoolService nepaliQuestionPoolService, NepaliAnswerPoolRepo nepaliAnswerPoolRepo) {
+    public NepaliQuestionPoolController(EnglishQuestionPoolRepo engQsnRepo, NepaliQuestionPoolRepo nepQsnRepo, NepaliQuestionPoolService nepaliQuestionPoolService, NepaliAnswerPoolRepo nepaliAnswerPoolRepo,
+                                        MessengerService messengerService) {
         this.engQsnRepo = engQsnRepo;
         this.nepQsnRepo = nepQsnRepo;
         this.nepaliQuestionPoolService = nepaliQuestionPoolService;
         this.nepaliAnswerPoolRepo = nepaliAnswerPoolRepo;
+        this.messengerService = messengerService;
     }
 
     @GetMapping(value = "/translatedQuestion/get", produces = "application/json")

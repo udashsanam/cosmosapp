@@ -1,12 +1,16 @@
 package com.cosmos;
 
+import com.cosmos.meta.service.MessengerMenuApp;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.event.EventListener;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -15,7 +19,9 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 
 import com.cosmos.common.storage.model.FileStorageProperties;
 
-	@CrossOrigin
+import java.util.List;
+
+@CrossOrigin
 	@SpringBootApplication
 	@EnableJpaAuditing
 	@EnableConfigurationProperties({
@@ -24,6 +30,8 @@ import com.cosmos.common.storage.model.FileStorageProperties;
 	@EnableAsync
 	@EnableScheduling
 	public class CosmosBackendApplication extends SpringBootServletInitializer{
+		@Autowired
+		private MessengerMenuApp messengerMenuApp;
 
 		public static void main(String[] args) {
 			SpringApplication.run(CosmosBackendApplication.class, args);
@@ -43,4 +51,15 @@ import com.cosmos.common.storage.model.FileStorageProperties;
 		public ModelMapper modelMapper() {
 			return new ModelMapper();
 		}
+
+//		@EventListener(ApplicationReadyEvent.class)
+//		public void onApplicationEvent(ApplicationReadyEvent event) {
+//			// --- CREATE example --------------------------------------------------
+//			List<MessengerMenuApp.MenuItem> items = List.of(
+//					MessengerMenuApp.MenuItem.postback("Restart registration Process",  "UPDATE_DETAILS")
+//			);
+//
+//			List<MessengerMenuApp.LocaleMenu> menus = List.of(new MessengerMenuApp.LocaleMenu("default", false, items));
+//			System.out.println("Create: " + messengerMenuApp.createPersistentMenu(menus));
+//		}
 	}
