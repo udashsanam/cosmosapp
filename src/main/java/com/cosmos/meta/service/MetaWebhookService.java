@@ -54,6 +54,9 @@ public class MetaWebhookService {
 
     private final UserServiceImpl userService;
 
+    @Value("${payment.base.url}")
+    private String paymentUrl;
+
     public MetaWebhookService(UserRepository userRepository,
                               MessengerService messengerService,
                               RegistrationFlowRepository registrationFlowRepository,
@@ -168,7 +171,7 @@ public class MetaWebhookService {
         RegistrationFlowEntity registrationFlowEntity = registrationFlowRepository.findByIsCurrentStateAndSenderId(true, senderId);
         if (registrationFlowEntity == null) {
             if (appUser == null) {
-                messengerService.sendMessage(senderId, "User is not register please do register first.");
+                messengerService.sendMessage(senderId, "User is not register please do register first using Messenger App.");
                 log.info("User not found:");
             } else {
                 EnglishQuestionDto englishQuestionDto = new EnglishQuestionDto();
@@ -192,15 +195,24 @@ public class MetaWebhookService {
                 return;
             }
             log.info("App initialized starting message: {}", payload);
+            RegistrationFlowEntity registrationFlowEntity = registrationFlowRepository.findByIsCurrentStateAndSenderId(true, senderId);
+            if (registrationFlowEntity != null) {
+                messengerService.sendMessage(senderId, "Registration already exist.");
+                messengerService.sendMessage(senderId, "Starting from beginning.");
+                registrationFlowRepository.deleteOldRegistrationFlows(senderId);
+            }
             messengerService.sendMessage(senderId, "What is your full name? format: [First Name] [Last Name]");
             registrationFlowRepository.save(RegistrationFlowEntity.builder()
                     .flowStep(FlowStep.NAME)
-                    .response(null)
                     .createdAt(new Date())
                     .isCurrentState(true)
                     .latestFlow(true)
                     .senderId(senderId)
                     .build());
+        } else if ("PAYMENT".equals(payload)) {
+            messengerService.sendMessage(senderId, "Payment process started. Click Link to proceed.");
+            messengerService.sendMessage(senderId, paymentUrl + "/payment?code=" + senderId);
+
         }
         log.info("[Page {}] Postback from {}: {}", pageId, senderId, payload);
     }

@@ -1,0 +1,106 @@
+
+<style>
+    .payment-container {
+        max-width: 900px;
+        margin: auto;
+        font-family: Arial, sans-serif;
+    }
+
+    .payment-title {
+        font-size: 22px;
+        font-weight: bold;
+    }
+
+    .payment-subtitle {
+        color: #666;
+        margin-bottom: 20px;
+    }
+
+    .payment-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+
+    .payment-card {
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 20px;
+        cursor: pointer;
+        text-align: center;
+        transition: 0.2s;
+    }
+
+    .payment-card:hover {
+        border-color: #60bb46;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .payment-card img {
+        height: 40px;
+        margin-bottom: 10px;
+    }
+
+    .selected {
+        border: 2px solid #60bb46;
+    }
+</style>
+
+<body xmlns:th="http://www.w3.org/1999/xhtml"><div class="payment-container">
+    <div class="payment-title">Payment Method</div>
+    <div class="payment-subtitle">Choose how you'd like to pay?</div>
+
+    <div class="payment-grid">
+
+
+
+        <div class="payment-card" onclick="selectMethod('card')">
+            <img th:src="@{/images/khalti.png}" alt="Khalti">
+            <div>Khalti</div>
+        </div>
+
+        <!-- ✅ eSewa option -->
+        <div class="payment-card" onclick="submitEsewa()">
+            <img th:src="@{/images/esewa.png}">
+            <div>eSewa</div>
+        </div>
+
+        <div class="payment-card" onclick="openRazorpay()">
+            <img th:src="@{/images/razorpay.png}" >
+            <div>Pay with Razorpay</div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Hidden eSewa Form -->
+<form id="esewaForm"
+      th:action="@{https://rc-epay.esewa.com.np/api/epay/main/v2/form}"
+      method="POST">
+
+    <input type="hidden" name="amount" th:value="${paymentData.amount}" />
+    <input type="hidden" name="tax_amount" th:value="${paymentData.tax_amount}" />
+    <input type="hidden" name="total_amount" th:value="${paymentData.total_amount}" />
+    <input type="hidden" name="transaction_uuid" th:value="${paymentData.transaction_uuid}" />
+    <input type="hidden" name="product_code" th:value="${paymentData.product_code}" />
+    <input type="hidden" name="product_service_charge" th:value="${paymentData.product_service_charge}" />
+    <input type="hidden" name="product_delivery_charge" th:value="${paymentData.product_delivery_charge}" />
+    <input type="hidden" name="success_url" th:value="${paymentData.success_url}" />
+    <input type="hidden" name="failure_url" th:value="${paymentData.failure_url}" />
+    <input type="hidden" name="signed_field_names" th:value="${paymentData.signed_field_names}" />
+    <input type="hidden" name="signature" th:value="${paymentData.signature}" />
+
+</form>
+
+<script>
+    function selectMethod(type) {
+        alert(type + " not implemented yet");
+    }
+
+    // ✅ Submit eSewa form directly
+    function submitEsewa() {
+        document.getElementById("esewaForm").submit();
+    }
+</script>
+</body>
+

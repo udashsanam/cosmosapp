@@ -52,14 +52,17 @@ import java.util.List;
 			return new ModelMapper();
 		}
 
-//		@EventListener(ApplicationReadyEvent.class)
-//		public void onApplicationEvent(ApplicationReadyEvent event) {
-//			// --- CREATE example --------------------------------------------------
-//			List<MessengerMenuApp.MenuItem> items = List.of(
-//					MessengerMenuApp.MenuItem.postback("Restart registration Process",  "UPDATE_DETAILS")
-//			);
-//
-//			List<MessengerMenuApp.LocaleMenu> menus = List.of(new MessengerMenuApp.LocaleMenu("default", false, items));
-//			System.out.println("Create: " + messengerMenuApp.createPersistentMenu(menus));
-//		}
+		@EventListener(ApplicationReadyEvent.class)
+		public void onApplicationEvent(ApplicationReadyEvent event) {
+
+//			 --- CREATE example --------------------------------------------------
+			List<MessengerMenuApp.MenuItem> items = List.of(
+					MessengerMenuApp.MenuItem.postback("Restart registration Process",  "UPDATE_DETAILS"),
+					MessengerMenuApp.MenuItem.postback("Process Payment", "PAYMENT")
+			);
+
+
+			List<MessengerMenuApp.LocaleMenu> menus = List.of(new MessengerMenuApp.LocaleMenu("default", false, items));
+			System.out.println("Create: " + messengerMenuApp.createPersistentMenu(menus));
+		}
 	}
