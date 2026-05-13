@@ -1,14 +1,19 @@
 package com.cosmos.meta.service;
 
+import com.cosmos.khalti.service.KhaltiService;
 import com.cosmos.login.entity.AppUser;
 import com.cosmos.meta.model.FlowStep;
 import com.cosmos.meta.model.RegistrationFlowEntity;
 import com.cosmos.meta.repo.RegistrationFlowRepository;
+import com.cosmos.payment.service.AES;
 import com.cosmos.questionPool.dto.EnglishQuestionDto;
 import com.cosmos.questionPool.service.EnglishQuestionPoolService;
+import com.cosmos.user.dto.PackageSubscriptionDto;
 import com.cosmos.user.dto.UserDto;
+import com.cosmos.user.entity.PackageSubscription;
 import com.cosmos.user.entity.User;
 import com.cosmos.user.repo.UserRepository;
+import com.cosmos.user.service.PackageSubscriptionServiceImpl;
 import com.cosmos.user.service.UserServiceImpl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -54,6 +59,10 @@ public class MetaWebhookService {
 
     private final UserServiceImpl userService;
 
+    private final KhaltiService khaltiService;
+
+    private final PackageSubscriptionServiceImpl packageSubscriptionService;
+
     @Value("${payment.base.url}")
     private String paymentUrl;
 
@@ -61,12 +70,16 @@ public class MetaWebhookService {
                               MessengerService messengerService,
                               RegistrationFlowRepository registrationFlowRepository,
                               EnglishQuestionPoolService englishQuestionPoolService,
-                              UserServiceImpl userService) {
+                              UserServiceImpl userService,
+                              KhaltiService khaltiService,
+                              PackageSubscriptionServiceImpl packageSubscriptionService) {
         this.userRepository = userRepository;
         this.messengerService = messengerService;
         this.registrationFlowRepository = registrationFlowRepository;
         this.englishQuestionPoolService = englishQuestionPoolService;
         this.userService = userService;
+        this.khaltiService = khaltiService;
+        this.packageSubscriptionService = packageSubscriptionService;
     }
 
 
@@ -128,7 +141,11 @@ public class MetaWebhookService {
                 if (event.has("message")) {
                     handleMessage(pageId, event);
                 } else if (event.has("postback")) {
-                    handlePostback(pageId, event);
+                    try {
+                        handlePostback(pageId, event);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             });
         });
@@ -174,6 +191,12 @@ public class MetaWebhookService {
                 messengerService.sendMessage(senderId, "User is not register please do register first using Messenger App.");
                 log.info("User not found:");
             } else {
+                PackageSubscription packageSubscription = packageSubscriptionService.findOldestPackageByUserId(appUser.getUserId());
+                if(packageSubscription.getRemainingQuestion() == 0){
+                    messengerService.sendMessage(senderId, "You don't have remaining questions! please pay first. Using Payment  link below");
+                    messengerService.sendMessage(senderId, paymentUrl + "/payment?code=" + senderId);
+                    return;
+                }
                 EnglishQuestionDto englishQuestionDto = new EnglishQuestionDto();
                 englishQuestionDto.setUserId(appUser.getUserId());
                 englishQuestionDto.setQuestionPrice(0.00);
@@ -185,7 +208,7 @@ public class MetaWebhookService {
         handleRegistrationFlow(text, senderId);
     }
 
-    private void handlePostback(String pageId, JsonNode event) {
+    private void handlePostback(String pageId, JsonNode event) throws Exception {
         String senderId = event.path("sender").path("id").asText();
         String payload = event.path("postback").path("payload").asText();
         if (START_CONVERSATION.equals(payload) || UPDATE_DETAILS.equals(payload)) {
@@ -211,7 +234,8 @@ public class MetaWebhookService {
                     .build());
         } else if ("PAYMENT".equals(payload)) {
             messengerService.sendMessage(senderId, "Payment process started. Click Link to proceed.");
-            messengerService.sendMessage(senderId, paymentUrl + "/payment?code=" + senderId);
+            messengerService.sendMessage(senderId, paymentUrl + "/payment?code=" + AES.encrypt(senderId));
+//            khaltiService.initKhalti(senderId);
 
         }
         log.info("[Page {}] Postback from {}: {}", pageId, senderId, payload);

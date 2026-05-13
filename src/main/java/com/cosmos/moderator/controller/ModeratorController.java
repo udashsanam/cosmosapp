@@ -20,6 +20,7 @@ import com.cosmos.questionPool.repo.EnglishAnswerPoolRepo;
 import com.cosmos.questionPool.repo.NepaliQuestionPoolRepo;
 import com.cosmos.questionPool.service.EnglishQuestionPoolService;
 import com.cosmos.user.dto.UserQuestionAnswerHistory;
+import com.cosmos.user.service.PackageSubscriptionServiceImpl;
 import com.cosmos.user.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -40,13 +41,15 @@ public class ModeratorController {
     private UserServiceImpl userService;
     private CreditServiceImpl creditService;
     private final MessengerService messengerService;
+    private final PackageSubscriptionServiceImpl packageSubscriptionService;
 
     @Autowired
     public ModeratorController(NepaliAnswerPoolRepo nepaliAnswerPoolRepo, NepaliQuestionPoolRepo nepQsnRepo,
                                EnglishQuestionPoolService englishQuestionPoolService,
                                EnglishAnswerPoolRepo finalRepo, ModeratorService moderatorService,
                                UserServiceImpl userService, CreditServiceImpl creditService,
-                               MessengerService messengerService) {
+                               MessengerService messengerService,
+                               PackageSubscriptionServiceImpl packageSubscriptionService) {
         this.nepaliAnswerPoolRepo = nepaliAnswerPoolRepo;
         this.nepQsnRepo = nepQsnRepo;
         this.englishQuestionPoolService = englishQuestionPoolService;
@@ -55,6 +58,7 @@ public class ModeratorController {
         this.userService = userService;
         this.creditService = creditService;
         this.messengerService = messengerService;
+        this.packageSubscriptionService = packageSubscriptionService;
     }
 
     @GetMapping(value = "/current-job", produces = "application/json")

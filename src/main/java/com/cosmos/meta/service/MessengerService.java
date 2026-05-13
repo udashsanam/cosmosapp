@@ -3,6 +3,7 @@ package com.cosmos.meta.service;
 import com.cosmos.login.entity.AppUser;
 import com.cosmos.user.entity.User;
 import com.cosmos.user.repo.UserRepository;
+import com.cosmos.user.service.PackageSubscriptionServiceImpl;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -22,8 +23,12 @@ public class MessengerService {
 
     private final UserRepository userRepository;
 
-    public MessengerService(UserRepository userRepository) {
+    private final PackageSubscriptionServiceImpl packageSubscriptionService;
+
+    public MessengerService(UserRepository userRepository,
+                            PackageSubscriptionServiceImpl packageSubscriptionService) {
         this.userRepository = userRepository;
+        this.packageSubscriptionService = packageSubscriptionService;
     }
 
     public void sendMessage(String recipientId, String text) {
@@ -53,7 +58,8 @@ public class MessengerService {
 
     public void sendAnswerToUser(Long userId, String text) {
         User user = userRepository.findByUserId(userId);
-        sendMessage(user.getDeviceId(), text);
+        packageSubscriptionService.useSubscribePackage(user.getDeviceId());
+//        sendMessage(user.getDeviceId(), text);
     }
 
 

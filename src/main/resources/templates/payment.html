@@ -1,5 +1,4 @@
-
-<style>
+<style xmlns:th="http://www.w3.org/1999/xhtml">
     .payment-container {
         max-width: 900px;
         margin: auto;
@@ -46,7 +45,13 @@
     }
 </style>
 
+
 <body xmlns:th="http://www.w3.org/1999/xhtml"><div class="payment-container">
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script th:inline="javascript">
+        var orderId = /*[[${orderId}]]*/ "";
+        var amount = /*[[${amount}]]*/ 0;
+    </script>
     <div class="payment-title">Payment Method</div>
     <div class="payment-subtitle">Choose how you'd like to pay?</div>
 
@@ -54,8 +59,8 @@
 
 
 
-        <div class="payment-card" onclick="selectMethod('card')">
-            <img th:src="@{/images/khalti.png}" alt="Khalti">
+        <div class="payment-card" onclick="submitKhalti()">
+            <a  th:href="${khaltiLink}"> <img th:src="@{/images/khalti.png}" alt="Khalti"> </a>
             <div>Khalti</div>
         </div>
 
@@ -65,7 +70,7 @@
             <div>eSewa</div>
         </div>
 
-        <div class="payment-card" onclick="openRazorpay()">
+        <div class="payment-card" onclick="openRazorpay()" >
             <img th:src="@{/images/razorpay.png}" >
             <div>Pay with Razorpay</div>
         </div>
@@ -100,6 +105,39 @@
     // ✅ Submit eSewa form directly
     function submitEsewa() {
         document.getElementById("esewaForm").submit();
+    }
+
+    function openRazorpay() {
+
+        var options = {
+            "key": 'rzp_test_SjdXahwG51y5U1',
+            "amount": amount,
+            "currency": "INR",
+            "name": "Your App",
+            "description": "Test Transaction",
+            "order_id": orderId,
+            "handler": function (response) {
+                console.log("test")
+                console.log(response);
+
+                // send to backend for verification
+                // fetch('/api/payment/verify', {
+                //     method: 'POST',
+                //     headers: {'Content-Type': 'application/json'},
+                //     body: JSON.stringify(response)
+                // });
+            },
+
+            "theme": {
+                "color": "#3399cc"
+            }
+        };
+
+        console.log(options)
+        console.log('test')
+        console.log('test')
+        var rzp = new Razorpay(options);
+        rzp.open();
     }
 </script>
 </body>

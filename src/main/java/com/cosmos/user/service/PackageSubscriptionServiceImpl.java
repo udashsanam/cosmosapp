@@ -88,4 +88,10 @@ public class PackageSubscriptionServiceImpl {
         subsPkgDto.setPackageModel(questionPackageRepo.findById(subsPkg.getPackageId()).get());
         return subsPkgDto;
     }
+
+    public PackageSubscription findOldestPackageByUserId(Long userId) {
+
+        PackageSubscription subsPkg = subscriptionRepo.findOldestPackageByUserId(userId);
+        return subsPkg;
+    }
 }

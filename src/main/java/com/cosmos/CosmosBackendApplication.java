@@ -1,6 +1,7 @@
 package com.cosmos;
 
 import com.cosmos.meta.service.MessengerMenuApp;
+import com.cosmos.payment.service.AES;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -53,16 +54,17 @@ import java.util.List;
 		}
 
 		@EventListener(ApplicationReadyEvent.class)
-		public void onApplicationEvent(ApplicationReadyEvent event) {
+		public void onApplicationEvent(ApplicationReadyEvent event) throws Exception {
 
 //			 --- CREATE example --------------------------------------------------
-			List<MessengerMenuApp.MenuItem> items = List.of(
-					MessengerMenuApp.MenuItem.postback("Restart registration Process",  "UPDATE_DETAILS"),
-					MessengerMenuApp.MenuItem.postback("Process Payment", "PAYMENT")
-			);
-
-
-			List<MessengerMenuApp.LocaleMenu> menus = List.of(new MessengerMenuApp.LocaleMenu("default", false, items));
-			System.out.println("Create: " + messengerMenuApp.createPersistentMenu(menus));
+//			List<MessengerMenuApp.MenuItem> items = List.of(
+//					MessengerMenuApp.MenuItem.postback("Restart registration Process",  "UPDATE_DETAILS"),
+//					MessengerMenuApp.MenuItem.postback("Process Payment", "PAYMENT")
+//			);
+//
+//
+//			List<MessengerMenuApp.LocaleMenu> menus = List.of(new MessengerMenuApp.LocaleMenu("default", false, items));
+//			System.out.println("Create: " + messengerMenuApp.createPersistentMenu(menus));
+//			System.out.println(AES.encrypt("26492589603715304"));
 		}
 	}

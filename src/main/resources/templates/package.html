@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Package Selector</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #fafafa;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: auto;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 6px;
+            background: #fff;
+        }
+
+        .title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+
+        .price-box {
+            margin-top: 15px;
+            font-size: 16px;
+
+            display: flex;
+            flex-direction: column;
+            gap: 8px;   /* 🔥 controls spacing between lines */
+        }
+
+        .final-price {
+            font-size: 20px;
+            font-weight: bold;
+            color: green;
+        }
+        button {
+            margin-top: 15px;
+            padding: 10px;
+            width: 100%;
+            background: #49cc90;
+            border: none;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<script th:inline="javascript">
+    var code = /*[[${code}]]*/"";
+    console.log(code);
+</script>
+
+<div class="container">
+    <div class="title">Select Package</div>
+
+    <select id="packageSelect" onchange="updateDetails()">
+        <option value="">-- Select Package --</option>
+
+        <option th:each="pkg : ${paymentModels}"
+                th:value="${pkg.id}"
+                th:data-price="${pkg.amount}"
+                th:data-final-price="${pkg.finalAmount}"
+                th:data-discount="${pkg.discount}"
+                th:data-questions="${pkg.questionCount}"
+
+                th:text="${pkg.packageName}">
+        </option>
+    </select>
+
+    <div class="price-box">
+        <div>Original Price: Rs <span id="originalPrice">0</span></div>
+        <div>Discount: Rs <span id="discount">0</span></div>
+        <div class="final-price">Final Price: Rs <span id="finalPrice">0</span></div>
+        <div>Questions: <span id="questions">0</span></div>
+    </div>
+
+    <button onclick="submitForm()">Try it out</button>
+</div>
+
+<script>
+    function updateDetails() {
+        const select = document.getElementById("packageSelect");
+        const option = select.options[select.selectedIndex];
+
+        const price = option.getAttribute("data-price") || 0;
+        const discount = option.getAttribute("data-discount") || 0;
+        const questions = option.getAttribute("data-questions") || 0;
+
+        const finalPrice = price - discount;
+
+        document.getElementById("originalPrice").innerText = price;
+        document.getElementById("discount").innerText = discount;
+        document.getElementById("finalPrice").innerText = finalPrice;
+        document.getElementById("questions").innerText = questions;
+    }
+
+    function submitForm() {
+        const packageValue = document.getElementById("packageSelect").value;
+
+        if (!packageValue) {
+            alert("Please select a package");
+            return;
+        }
+        console.log(code);
+        // 🔥 redirect to Spring controller
+        window.location.href = "/payment/checkout?code=" +code+"&&package="+packageValue;
+    }
+</script>
+
+</body>
+</html>
