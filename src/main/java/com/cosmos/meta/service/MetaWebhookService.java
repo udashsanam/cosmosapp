@@ -192,7 +192,7 @@ public class MetaWebhookService {
                 log.info("User not found:");
             } else {
                 PackageSubscription packageSubscription = packageSubscriptionService.findOldestPackageByUserId(appUser.getUserId());
-                if(packageSubscription.getRemainingQuestion() == 0){
+                if(packageSubscription ==null ||packageSubscription.getRemainingQuestion() == 0){
                     messengerService.sendMessage(senderId, "You don't have remaining questions! please pay first. Using Payment  link below");
                     messengerService.sendMessage(senderId, paymentUrl + "/payment?code=" + senderId);
                     return;
@@ -234,7 +234,7 @@ public class MetaWebhookService {
                     .build());
         } else if ("PAYMENT".equals(payload)) {
             messengerService.sendMessage(senderId, "Payment process started. Click Link to proceed.");
-            messengerService.sendMessage(senderId, paymentUrl + "/payment?code=" + AES.encrypt(senderId));
+            messengerService.sendMessage(senderId, paymentUrl + "/payment/package?code=" + AES.encrypt(senderId));
 //            khaltiService.initKhalti(senderId);
 
         }

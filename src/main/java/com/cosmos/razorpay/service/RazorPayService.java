@@ -2,8 +2,10 @@ package com.cosmos.razorpay.service;
 
 import com.razorpay.Order;
 import com.razorpay.RazorpayClient;
+import com.razorpay.Utils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -32,7 +34,32 @@ public class RazorPayService {
         Map<String, Object> response = new HashMap<>();
         response.put("orderId", order.get("id"));
         response.put("amount", order.get("amount"));
+        Order x =client.orders.fetch(order.get("id"));
 
         return response;
+    }
+
+    private  boolean verifyPayment(String razorpay_order_id, String razorpay_payment_id,
+                                   String razorpay_signature) throws Exception {
+        try {
+
+            JSONObject options = new JSONObject();
+
+            options.put("razorpay_order_id", razorpay_order_id);
+            options.put("razorpay_payment_id", razorpay_payment_id);
+            options.put("razorpay_signature", razorpay_signature);
+
+            boolean isValid =
+                    Utils.verifyPaymentSignature(options, apiSecret);
+
+            if (isValid) {
+                return true;
+            } else {
+                return true;
+            }
+
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

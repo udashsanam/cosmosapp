@@ -59,7 +59,7 @@ public class MessengerService {
     public void sendAnswerToUser(Long userId, String text) {
         User user = userRepository.findByUserId(userId);
         packageSubscriptionService.useSubscribePackage(user.getDeviceId());
-//        sendMessage(user.getDeviceId(), text);
+        sendMessage(user.getDeviceId(), text);
     }
 
 

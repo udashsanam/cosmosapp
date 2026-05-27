@@ -35,6 +35,9 @@ public class PaymentDetail {
     @Column(name = "razor_pay_code")
     private String razorPayCode;
 
+    @Column(name = "paypal_code")
+    private String paypalCode;
+
     @Column(name = "reson_txt")
     private String resonTxt;
 
@@ -50,6 +53,9 @@ public class PaymentDetail {
     @Column(name = "khalti_response", columnDefinition = "text")
     private String khaltiResponse;
 
+    @Column(name = "paypal_response", columnDefinition = "text")
+    private String paypalResponse;
+
     @Column(name = "is_esewa", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean isEsewa = false;
 
@@ -58,5 +64,8 @@ public class PaymentDetail {
 
     @Column(name = "is_razor", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean isRazor = false;
+
+    @Column(name = "is_paypal", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private Boolean isPaypal = false;
 
 }

@@ -56,7 +56,7 @@ import java.util.List;
 		@EventListener(ApplicationReadyEvent.class)
 		public void onApplicationEvent(ApplicationReadyEvent event) throws Exception {
 
-//			 --- CREATE example --------------------------------------------------
+////			 --- CREATE example --------------------------------------------------
 //			List<MessengerMenuApp.MenuItem> items = List.of(
 //					MessengerMenuApp.MenuItem.postback("Restart registration Process",  "UPDATE_DETAILS"),
 //					MessengerMenuApp.MenuItem.postback("Process Payment", "PAYMENT")
@@ -66,5 +66,7 @@ import java.util.List;
 //			List<MessengerMenuApp.LocaleMenu> menus = List.of(new MessengerMenuApp.LocaleMenu("default", false, items));
 //			System.out.println("Create: " + messengerMenuApp.createPersistentMenu(menus));
 //			System.out.println(AES.encrypt("26492589603715304"));
+//			messengerMenuApp.deletePersistentMenus();
+//			messengerMenuApp.setGetStarted("STARTING_NEW_CONVERSATION");
 		}
 	}

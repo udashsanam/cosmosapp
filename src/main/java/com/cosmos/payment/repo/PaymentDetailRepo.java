@@ -10,4 +10,6 @@ public interface PaymentDetailRepo extends JpaRepository<PaymentDetail, Long> {
     PaymentDetail findByEsewaCode(String esewaCode);
 
     PaymentDetail findByKhaltiCode(String khaltiCode);
+
+    PaymentDetail findByPaymentCode(String paymentCode);
 }

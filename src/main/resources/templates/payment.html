@@ -48,9 +48,11 @@
 
 <body xmlns:th="http://www.w3.org/1999/xhtml"><div class="payment-container">
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="https://www.paypal.com/sdk/js?client-id=ASAyRF79WHpymlgrCDrQMGhzGo50ZfiXIJGpS779_Fz6QGFQQozEqQexVFxrPoRjCJkBycmHNGZj597e"></script>
     <script th:inline="javascript">
         var orderId = /*[[${orderId}]]*/ "";
         var amount = /*[[${amount}]]*/ 0;
+        var paypalLink = /*[[${payPalLink}]]*/ "";
     </script>
     <div class="payment-title">Payment Method</div>
     <div class="payment-subtitle">Choose how you'd like to pay?</div>
@@ -74,6 +76,11 @@
             <img th:src="@{/images/razorpay.png}" >
             <div>Pay with Razorpay</div>
         </div>
+        <div class="payment-card" onclick="openPaypal()" >
+            <a  th:href="${payPalLink}" >  <img th:src="@{/images/paypal.png}" > </a>
+            <div>Pay with Paypal</div>
+        </div>
+<!--        <div id="paypal-button-container"></div>-->
 
     </div>
 </div>
@@ -110,10 +117,10 @@
     function openRazorpay() {
 
         var options = {
-            "key": 'rzp_test_SjdXahwG51y5U1',
+            "key": 'rzp_test_SpgjFJC8NWOHr3',
             "amount": amount,
             "currency": "INR",
-            "name": "Your App",
+            "name": "Cosmos Astrology",
             "description": "Test Transaction",
             "order_id": orderId,
             "handler": function (response) {
@@ -138,6 +145,9 @@
         console.log('test')
         var rzp = new Razorpay(options);
         rzp.open();
+    }
+    function openPaypal() {
+        console.log(paypalLink)
     }
 </script>
 </body>

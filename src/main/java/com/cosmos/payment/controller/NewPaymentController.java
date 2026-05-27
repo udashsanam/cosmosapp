@@ -10,6 +10,7 @@ import com.cosmos.khalti.service.KhaltiService;
 import com.cosmos.payment.entity.PaymentDetail;
 import com.cosmos.payment.repo.PaymentDetailRepo;
 import com.cosmos.payment.service.AES;
+import com.cosmos.paypal.service.PaypalService;
 import com.cosmos.razorpay.service.RazorPayService;
 import com.cosmos.user.entity.User;
 import com.cosmos.user.repo.UserRepository;
@@ -46,6 +47,8 @@ public class NewPaymentController {
     private final UserRepository userRepository;
 
     private final PaymentDetailRepo paymentDetailRepo;
+
+    private final PaypalService paypalService;
 
 
 
@@ -89,7 +92,12 @@ public class NewPaymentController {
         paymentDetail.setRazorPayCode(String.valueOf(order.get("orderId")));
         System.out.println(String.valueOf(order.get("orderId")));
 
+
+        Map<String,String> responseMap = paypalService.createOrder(String.valueOf(amount));
+        paymentDetail.setPaypalCode(responseMap.get("orderId"));
         paymentDetailRepo.save(paymentDetail);
+
+        model.addAttribute("payPalLink", responseMap.get("paymentLink"));
 
         return "payment";
     }
